@@ -1,23 +1,35 @@
-import { readData, saveData, parseJsonBody } from "./_data.js";
+import { readData, saveData, parseJsonBody, addCorsHeaders } from "./_data.js";
 
 export default async function handler(req, res) {
+  addCorsHeaders(res);
+
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
     return;
   }
 
-  const body = req.body || (await parseJsonBody(req));
-  const data = readData();
+  try {
+    const body = req.body || (await parseJsonBody(req));
+    const data = readData();
 
-  const game = {
-    id: Date.now(),
-    date: new Date().toISOString(),
-    lotteryOrder: body.lotteryOrder || [],
-    results: body.results || [],
-  };
+    const game = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      lotteryOrder: body.lotteryOrder || [],
+      results: body.results || [],
+    };
 
-  data.games.push(game);
-  saveData(data);
+    data.games.push(game);
+    saveData(data);
 
-  res.status(200).json(data);
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error saving game:", error);
+    res.status(500).json({ error: "Failed to save game" });
+  }
 }

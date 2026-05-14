@@ -1,10 +1,22 @@
-import { readData } from "./_data.js";
+import { readData, addCorsHeaders } from "./_data.js";
 
 export default function handler(req, res) {
+  addCorsHeaders(res);
+
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== "GET") {
     res.status(405).json({ error: "Method Not Allowed" });
     return;
   }
 
-  res.status(200).json(readData());
+  try {
+    res.status(200).json(readData());
+  } catch (error) {
+    console.error("Error reading data:", error);
+    res.status(500).json({ error: "Failed to read data" });
+  }
 }

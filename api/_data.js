@@ -44,7 +44,11 @@ export function readData() {
 export function saveData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
-
+export function addCorsHeaders(res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
 export function parseJsonBody(req) {
   return new Promise((resolve, reject) => {
     let body = "";

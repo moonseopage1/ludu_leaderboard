@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || (await parseJsonBody(req));
-    const data = readData();
+    const data = await readData();
 
     const game = {
       id: Date.now(),
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     };
 
     data.games.push(game);
-    saveData(data);
+    await saveData(data);
 
     res.status(200).json(data);
   } catch (error) {

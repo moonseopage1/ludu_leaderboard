@@ -1,9 +1,12 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { get, put } from "@vercel/blob";
 
 const projectDataPath = path.join(process.cwd(), "ludu-data.txt");
 let DATA_FILE = projectDataPath;
+const BLOB_DATA_PATH = "ludu-data.json";
+const hasBlobStorage = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 try {
   fs.accessSync(projectDataPath, fs.constants.W_OK);
@@ -27,7 +30,14 @@ export function defaultData() {
   };
 }
 
-export function readData() {
+function normalizeData(data) {
+  return {
+    players: Array.isArray(data?.players) ? data.players : defaultData().players,
+    games: Array.isArray(data?.games) ? data.games : [],
+  };
+}
+
+function readLocalData() {
   if (!fs.existsSync(DATA_FILE)) {
     fs.writeFileSync(DATA_FILE, JSON.stringify(defaultData(), null, 2));
   }
@@ -41,9 +51,68 @@ export function readData() {
   }
 }
 
-export function saveData(data) {
+function saveLocalData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
+
+async function streamToText(stream) {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let text = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    text += decoder.decode(value, { stream: true });
+  }
+
+  return text + decoder.decode();
+}
+
+async function readBlobData() {
+  const result = await get(BLOB_DATA_PATH, { access: "private" });
+
+  if (!result?.stream) {
+    const data = defaultData();
+    await saveBlobData(data);
+    return data;
+  }
+
+  try {
+    return normalizeData(JSON.parse(await streamToText(result.stream)));
+  } catch {
+    const data = defaultData();
+    await saveBlobData(data);
+    return data;
+  }
+}
+
+async function saveBlobData(data) {
+  await put(BLOB_DATA_PATH, JSON.stringify(normalizeData(data), null, 2), {
+    access: "private",
+    allowOverwrite: true,
+    contentType: "application/json",
+    cacheControlMaxAge: 60,
+  });
+}
+
+export async function readData() {
+  if (hasBlobStorage) {
+    return readBlobData();
+  }
+
+  return readLocalData();
+}
+
+export async function saveData(data) {
+  if (hasBlobStorage) {
+    await saveBlobData(data);
+    return;
+  }
+
+  saveLocalData(data);
+}
+
 export function addCorsHeaders(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");

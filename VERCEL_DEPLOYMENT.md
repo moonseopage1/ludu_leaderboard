@@ -1,91 +1,62 @@
 # Ludu Leaderboard - Vercel Deployment Guide
 
-## Setup
+This project runs locally with `ludu-data.txt`, but Vercel cannot permanently save changes to files inside the deployed project. The Vercel API functions now use Vercel Blob when `BLOB_READ_WRITE_TOKEN` is available.
 
-1. **Initialize Git** (if not already done):
+## What changed
 
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
+- Local `node server.js` still reads and writes `ludu-data.txt`.
+- Vercel `api/` functions read and write `ludu-data.json` in Vercel Blob.
+- `@vercel/blob` was added to `package.json`.
+- The app requires Node.js 20 or newer.
+
+## Fix Vercel storage
+
+1. Go to your project in the Vercel dashboard.
+2. Open the **Storage** tab.
+3. Select **Create Database**.
+4. Choose **Blob**.
+5. Create a **Private** Blob store.
+6. Select the environments where the token should be available, usually **Production**, **Preview**, and **Development**.
+7. Confirm that Vercel created the environment variable:
+
+   ```txt
+   BLOB_READ_WRITE_TOKEN
    ```
 
-2. **Push to GitHub**:
-   - Create a repo on GitHub
-   - Push your code:
-     ```bash
-     git remote add origin <your-repo-url>
-     git branch -M main
-     git push -u origin main
-     ```
+8. Redeploy the project from Vercel.
 
-3. **Deploy on Vercel**:
-   - Go to [vercel.com](https://vercel.com)
-   - Click "New Project"
-   - Import your GitHub repo
-   - Click "Deploy"
+After redeploying, test:
 
-## Important Notes
+```txt
+https://your-domain.vercel.app/api/data
+```
 
-### Why It Wasn't Working Before
+Then add a player or save a game in the UI. Refresh the page and open the app again later. The data should still be there.
 
-On Vercel, **serverless functions** are used instead of persistent Express servers:
+## Optional local Vercel test
 
-- Your local `server.js` runs continuously
-- Vercel's `api/` folder contains **stateless functions** that respond to requests
-- Each request is independent and starts fresh
-
-### API Endpoints
-
-All requests automatically route to the `/api` functions:
-
-- `GET /api/data` → `api/data.js`
-- `POST /api/player` → `api/player.js`
-- `POST /api/game` → `api/game.js`
-- `DELETE /api/reset` → `api/reset.js`
-
-### Data Storage
-
-⚠️ **Important**: On Vercel, **serverless storage is temporary**. Files created during execution are deleted after the function completes.
-
-**Solutions for persistent data:**
-
-1. **MongoDB Atlas** (Free tier available)
-2. **Supabase** (PostgreSQL, free tier)
-3. **Firebase** (Realtime database)
-4. **Vercel KV** (Redis)
-
-### Testing Locally
-
-Before deploying, test your API endpoints:
+If you want to test Blob locally instead of local TXT storage:
 
 ```bash
-# Terminal 1: Start the server
-node server.js
-
-# Terminal 2: Test an endpoint
-curl http://localhost:4000/api/data
-
-# Test adding a player
-curl -X POST http://localhost:4000/api/player \
-  -H "Content-Type: application/json" \
-  -d '{"name":"TestPlayer"}'
+npm install -g vercel
+vercel login
+vercel link
+vercel env pull .env.local
+vercel dev
 ```
+
+Without `BLOB_READ_WRITE_TOKEN`, local development continues to use `ludu-data.txt`.
 
 ## Troubleshooting
 
-### Frontend shows but backend doesn't work
+If data still does not save on Vercel:
 
-1. **Check CORS headers**: ✅ Already added in updated files
-2. **Verify API routes**: Go to `https://your-domain.vercel.app/api/data` in browser
-3. **Check function logs**: Go to Vercel Dashboard → Deployments → Logs
+- Check Vercel dashboard -> Project -> Settings -> Environment Variables.
+- Make sure `BLOB_READ_WRITE_TOKEN` exists for the environment you deployed.
+- Redeploy after adding the Blob store or token.
+- Check Vercel dashboard -> Deployments -> your deployment -> Functions logs.
+- Make sure Vercel is using Node.js 20 or newer.
 
-### Data not persisting
+## Storage note
 
-This is expected! Use a database solution from the list above.
-
-## Next Steps
-
-1. Add a database for persistent storage
-2. Update `api/_data.js` to query the database instead of local files
-3. Test all endpoints after deployment
+Vercel Blob works well for this small leaderboard JSON file. If many people will save games at the same time, use a real database such as Vercel Marketplace Postgres, Neon, Supabase, or Upstash, because object-file storage can have write conflicts under heavy concurrent updates.

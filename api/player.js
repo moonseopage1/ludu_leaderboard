@@ -22,14 +22,14 @@ export default async function handler(req, res) {
       return;
     }
 
-    const data = readData();
+    const data = await readData();
     const exists = data.players.some(
       (player) => player.toLowerCase() === name.toLowerCase(),
     );
 
     if (!exists) {
       data.players.push(name);
-      saveData(data);
+      await saveData(data);
     }
 
     res.status(200).json(data);

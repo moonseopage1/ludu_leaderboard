@@ -1,6 +1,6 @@
 import { defaultData, saveData, addCorsHeaders } from "./_data.js";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   addCorsHeaders(res);
 
   if (req.method === "OPTIONS") {
@@ -15,7 +15,7 @@ export default function handler(req, res) {
 
   try {
     const data = defaultData();
-    saveData(data);
+    await saveData(data);
     res.status(200).json(data);
   } catch (error) {
     console.error("Error resetting data:", error);

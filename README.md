@@ -6,7 +6,8 @@ Simple Ludu leaderboard app using:
 - Tailwind CSS CDN
 - JavaScript
 - Node.js Express
-- TXT file storage
+- TXT file storage locally
+- Vercel Blob storage on Vercel
 
 ## Install
 
@@ -26,13 +27,15 @@ Open:
 http://localhost:4000
 ```
 
-## TXT Database
+## Data Storage
 
-All data is saved in:
+Local development saves data in:
 
 ```txt
 ludu-data.txt
 ```
+
+Vercel deployment saves data in Vercel Blob when `BLOB_READ_WRITE_TOKEN` is configured. See `VERCEL_DEPLOYMENT.md`.
 
 ## Scoring
 

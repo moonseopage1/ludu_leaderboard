@@ -6,7 +6,8 @@
     "Moon",
     "Habu vai",
     "TestUser",
-    "Dadu Vai"
+    "Dadu Vai",
+    "GGG"
   ],
   "games": []
 }

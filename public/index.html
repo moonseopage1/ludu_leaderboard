@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ludu Leaderboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-slate-100 text-slate-900">
+  <main class="mx-auto max-w-7xl p-4 md:p-8">
+    <header class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="flex items-center gap-4">
+          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-4xl">🎲</div>
+          <div>
+            <h1 class="text-3xl font-bold md:text-4xl">Ludu Leaderboard</h1>
+            <p class="mt-1 text-slate-500">Track games, random turn order and leaderboard</p>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
+          ✅ Data saved in TXT file
+        </div>
+      </div>
+    </header>
+
+    <section class="grid gap-6 lg:grid-cols-2">
+      <div class="rounded-2xl border border-blue-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-blue-600">
+          👤 Add New Player
+        </h2>
+
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <input
+            id="playerName"
+            type="text"
+            placeholder="Enter player name"
+            class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500"
+          />
+
+          <button
+            onclick="addPlayer()"
+            class="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+          >
+            Add Player
+          </button>
+        </div>
+
+        <p class="mt-5 font-semibold text-slate-600">
+          Total Players: <span id="totalPlayers">0</span>
+        </p>
+
+        <div id="playerBadges" class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4"></div>
+      </div>
+
+      <div class="rounded-2xl border border-purple-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-purple-600">
+          👥 Select 4 Players for Game
+        </h2>
+
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <select id="player1" class="player-select rounded-xl border border-slate-300 px-4 py-3"></select>
+          <select id="player2" class="player-select rounded-xl border border-slate-300 px-4 py-3"></select>
+          <select id="player3" class="player-select rounded-xl border border-slate-300 px-4 py-3"></select>
+          <select id="player4" class="player-select rounded-xl border border-slate-300 px-4 py-3"></select>
+        </div>
+
+        <div class="mt-5 text-center">
+          <button
+            onclick="runLottery()"
+            class="rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700"
+          >
+            🎲 Random Lottery for Turn Order
+          </button>
+        </div>
+
+        <div id="lotteryInfo" class="mt-5 rounded-xl border border-purple-200 bg-purple-50 p-5 text-purple-700">
+          <p class="font-bold">🏆 Lottery decides who will play first!</p>
+          <p class="mt-1 text-sm">Click the button above to randomize turn order.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="turnOrderSection" class="mt-6 hidden rounded-2xl border border-green-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-green-600">
+        🎯 Turn Order Lottery Result
+      </h2>
+
+      <div id="turnOrder" class="grid gap-4 md:grid-cols-4"></div>
+    </section>
+
+    <section class="mt-6 rounded-2xl border border-orange-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-orange-500">
+        🏆 Enter Game Result Position
+      </h2>
+
+      <div id="resultInputs" class="grid gap-4 md:grid-cols-4"></div>
+
+      <div class="mt-5 text-center">
+        <button
+          onclick="saveGame()"
+          class="rounded-xl bg-green-600 px-8 py-3 font-semibold text-white hover:bg-green-700"
+        >
+          💾 Save Game Result
+        </button>
+      </div>
+    </section>
+
+    <section class="mt-6 grid gap-6 lg:grid-cols-2">
+      <div class="rounded-2xl border border-blue-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-blue-600">
+          🏅 Leaderboard
+        </h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full overflow-hidden rounded-xl border border-slate-200 text-left">
+            <thead class="bg-blue-50 text-blue-700">
+              <tr>
+                <th class="p-3">Rank</th>
+                <th class="p-3">Player</th>
+                <th class="p-3">Games</th>
+                <th class="p-3">Wins</th>
+                <th class="p-3">Points</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
+        </div>
+
+        <div class="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm font-semibold text-blue-700">
+          ⭐ Scoring System: 1st = 4 pts, 2nd = 3 pts, 3rd = 2 pts, 4th = 1 pt
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-purple-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-purple-600">
+          📜 Game History
+        </h2>
+
+        <div id="gameHistory" class="space-y-4"></div>
+      </div>
+    </section>
+
+    <footer class="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-700">
+      ℹ️ All data is stored in <strong>ludu-data.txt</strong> in the project directory.
+    </footer>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

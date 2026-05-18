@@ -70,7 +70,14 @@ async function ensureWriteAccess() {
 
 function lockWrites() {
   sessionStorage.removeItem(WRITE_PIN_KEY);
+  lotteryOrder = [];
+  document.getElementById("turnOrderSection")?.classList.add("hidden");
   updateWriteControls();
+}
+
+async function switchToReadOnly() {
+  lockWrites();
+  await showAlert("success", "Read-only mode", "Write controls are locked in this tab.");
 }
 
 function getAuthHeaders() {
@@ -88,6 +95,7 @@ function updateWriteControls() {
 
   const status = document.getElementById("writeStatus");
   const unlockButton = document.getElementById("unlockButton");
+  const lockButton = document.getElementById("lockButton");
 
   if (status) {
     status.textContent = unlocked ? "Write mode unlocked" : "View-only mode";
@@ -99,6 +107,19 @@ function updateWriteControls() {
   if (unlockButton) {
     unlockButton.textContent = unlocked ? "Change PIN" : "Unlock";
   }
+
+  if (lockButton) {
+    lockButton.classList.toggle("hidden", !unlocked);
+  }
+
+  document.querySelectorAll(".write-panel").forEach((panel) => {
+    if (panel.id === "turnOrderSection" && lotteryOrder.length === 0) {
+      panel.classList.add("hidden");
+      return;
+    }
+
+    panel.classList.toggle("hidden", !unlocked);
+  });
 }
 
 function setData(data) {

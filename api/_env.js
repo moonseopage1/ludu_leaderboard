@@ -4,7 +4,7 @@ import path from "path";
 let loaded = false;
 
 export function loadLocalEnv() {
-  if (loaded || process.env.VERCEL) return;
+  if (loaded) return;
   loaded = true;
 
   try {
@@ -15,7 +15,8 @@ export function loadLocalEnv() {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) continue;
 
-      const [key, ...valueParts] = trimmed.split("=");
+      const [rawKey, ...valueParts] = trimmed.split("=");
+      const key = rawKey.trim().replace(/^\uFEFF/, "");
       const value = valueParts.join("=").trim().replace(/^["']|["']$/g, "");
 
       if (key && process.env[key] === undefined) {

@@ -36,10 +36,15 @@
 
     .grid > *,
     .flex > *,
-    td,
-    th {
+    td {
       min-width: 0;
       overflow-wrap: anywhere;
+    }
+
+    th {
+      min-width: 0;
+      overflow-wrap: normal;
+      white-space: nowrap;
     }
 
     @media (max-width: 639px) {
@@ -165,14 +170,14 @@
         </h2>
 
         <div class="w-full overflow-x-auto">
-          <table class="w-full table-fixed overflow-hidden rounded-xl border border-slate-200 text-left text-sm sm:text-base">
+          <table class="w-full overflow-hidden rounded-xl border border-slate-200 text-left text-sm sm:text-base">
             <thead class="bg-blue-50 text-blue-700">
               <tr>
-                <th class="w-14 p-2 sm:p-3">Rank</th>
+                <th class="w-16 p-2 sm:p-3">Rank</th>
                 <th class="p-2 sm:p-3">Player</th>
-                <th class="w-16 p-2 sm:p-3">Games</th>
-                <th class="w-14 p-2 sm:p-3">Wins</th>
-                <th class="w-16 p-2 sm:p-3">Points</th>
+                <th class="w-20 p-2 sm:p-3">Games</th>
+                <th class="w-16 p-2 sm:p-3">Wins</th>
+                <th class="w-20 p-2 sm:p-3">Points</th>
               </tr>
             </thead>
             <tbody id="leaderboardBody"></tbody>

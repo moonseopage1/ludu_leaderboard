@@ -3,58 +3,17 @@
     "Babu Vai",
     "Saidul",
     "Adif",
-    "Moon",
-    "Habu vai",
-    "TestUser",
-    "Dadu Vai",
-    "GGG",
-    "fdg",
-    "Sonet",
-    "Habu",
-    "Kabu",
-    "gg",
-    "Mr Player",
-    "ZZZ",
-    "Liton",
-    "MM"
+    "Moon"
   ],
   "games": [
     {
-      "id": 1779070845741,
-      "date": "2026-05-18T02:20:45.742Z",
+      "id": 1779091006849,
+      "date": "2026-05-18T07:56:46.849Z",
       "lotteryOrder": [
-        "Saidul",
+        "Moon",
         "Adif",
         "Babu Vai",
-        "Moon"
-      ],
-      "results": [
-        {
-          "player": "Babu Vai",
-          "position": 4
-        },
-        {
-          "player": "Saidul",
-          "position": 3
-        },
-        {
-          "player": "Adif",
-          "position": 2
-        },
-        {
-          "player": "Moon",
-          "position": 1
-        }
-      ]
-    },
-    {
-      "id": 1779074023138,
-      "date": "2026-05-18T03:13:43.138Z",
-      "lotteryOrder": [
-        "Saidul",
-        "Adif",
-        "Babu Vai",
-        "Moon"
+        "Saidul"
       ],
       "results": [
         {
@@ -63,11 +22,11 @@
         },
         {
           "player": "Saidul",
-          "position": 2
+          "position": 3
         },
         {
           "player": "Adif",
-          "position": 3
+          "position": 2
         },
         {
           "player": "Moon",

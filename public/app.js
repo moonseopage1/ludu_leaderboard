@@ -137,8 +137,8 @@ function updateWriteControls() {
   if (status) {
     status.textContent = unlocked ? "Write mode" : "View mode";
     status.className = unlocked
-      ? "rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700"
-      : "rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600";
+      ? "w-full rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-semibold text-green-700 sm:w-auto"
+      : "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600 sm:w-auto";
   }
 
   if (unlockButton) {
@@ -270,7 +270,7 @@ function renderPlayers() {
   playerBadges.innerHTML = players
     .map(
       (player) => `
-    <div class="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-center text-sm font-semibold text-blue-700">
+    <div class="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-center text-sm font-semibold text-blue-700 break-words">
       ${escapeHtml(player)}
     </div>
   `,
@@ -331,7 +331,7 @@ function renderResultInputs() {
 
   if (selected.length === 0) {
     resultInputs.innerHTML = `
-      <div class="md:col-span-4 rounded-xl border border-slate-200 bg-slate-50 p-5 text-center text-slate-500">
+      <div class="sm:col-span-2 md:col-span-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-slate-500 sm:p-5">
         Select 4 players first.
       </div>
     `;
@@ -345,7 +345,7 @@ function renderResultInputs() {
 
       return `
       <div class="rounded-xl border border-slate-200 p-4">
-        <label class="mb-3 block text-center font-bold">${escapeHtml(player)}</label>
+        <label class="mb-3 block break-words text-center font-bold">${escapeHtml(player)}</label>
         <select data-player="${escapeHtml(player)}" class="write-control position-select w-full rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400">
           <option value="">Position</option>
           ${[1, 2, 3, 4]
@@ -408,7 +408,7 @@ async function runLottery() {
       <div class="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl font-bold text-white">
         ${index + 1}
       </div>
-      <p class="font-bold">${escapeHtml(player)}</p>
+      <p class="break-words font-bold">${escapeHtml(player)}</p>
     </div>
   `,
     )
@@ -416,7 +416,7 @@ async function runLottery() {
 
   document.getElementById("lotteryInfo").innerHTML = `
     <p class="font-bold">Lottery completed!</p>
-    <p class="mt-1 text-sm">${lotteryOrder.map(escapeHtml).join(" -> ")}</p>
+    <p class="mt-1 break-words text-sm">${lotteryOrder.map(escapeHtml).join(" -> ")}</p>
   `;
 }
 
@@ -546,11 +546,11 @@ function renderLeaderboard() {
 
       return `
       <tr class="border-t border-slate-200">
-        <td class="p-3 font-bold">${rank}</td>
-        <td class="p-3 font-semibold">${escapeHtml(row.player)}</td>
-        <td class="p-3">${row.games}</td>
-        <td class="p-3">${row.wins}</td>
-        <td class="p-3 font-bold text-green-600">${row.points}</td>
+        <td class="p-2 font-bold sm:p-3">${rank}</td>
+        <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
+        <td class="p-2 sm:p-3">${row.games}</td>
+        <td class="p-2 sm:p-3">${row.wins}</td>
+        <td class="p-2 font-bold text-green-600 sm:p-3">${row.points}</td>
       </tr>
     `;
     })
@@ -562,7 +562,7 @@ function renderHistory() {
 
   if (games.length === 0) {
     history.innerHTML = `
-      <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 text-center text-slate-500">
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-slate-500 sm:p-5">
         No game history yet.
       </div>
     `;
@@ -583,10 +583,10 @@ function renderHistory() {
         </p>
 
         <p class="text-sm font-bold">Turn Order:</p>
-        <p class="mb-3 text-sm">${game.lotteryOrder.map(escapeHtml).join(" -> ")}</p>
+        <p class="mb-3 break-words text-sm">${game.lotteryOrder.map(escapeHtml).join(" -> ")}</p>
 
         <p class="text-sm font-bold">Result:</p>
-        <p class="text-sm">
+        <p class="break-words text-sm">
           ${sortedResults.map((result) => `${result.position}. ${escapeHtml(result.player)}`).join(" | ")}
         </p>
       </div>

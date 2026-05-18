@@ -7,33 +7,74 @@
   <title>Ludu Leaderboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      max-width: 100%;
+    }
+
+    main,
+    section,
+    header,
+    .grid,
+    .flex {
+      min-width: 0;
+    }
+
+    .grid > *,
+    .flex > *,
+    td,
+    th {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 639px) {
+      .swal2-popup {
+        width: calc(100% - 2rem) !important;
+      }
+    }
+  </style>
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-900">
-  <main class="mx-auto max-w-7xl p-4 md:p-8">
-    <header class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+  <main class="mx-auto w-full max-w-7xl p-3 sm:p-4 md:p-8">
+    <header class="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:mb-6 sm:p-6">
       <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div class="flex items-center gap-4">
+        <div class="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-4xl">🎲</div>
-          <div>
-            <h1 class="text-3xl font-bold md:text-4xl">Ludu Leaderboard</h1>
+          <div class="min-w-0">
+            <h1 class="text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">Ludu Leaderboard</h1>
             <p class="mt-1 text-slate-500">Track games, random turn order and leaderboard</p>
           </div>
         </div>
 
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
           <div id="writeStatus"
-            class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600 sm:w-auto">
             View-only mode
           </div>
 
           <button id="unlockButton" type="button" onclick="unlockWrites()"
-            class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800">
+            class="w-full rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800 sm:w-auto">
             Unlock
           </button>
 
           <button id="lockButton" type="button" onclick="switchToReadOnly()"
-            class="hidden rounded-xl border border-red-300 bg-white px-5 py-3 text-sm font-semibold text-red-700 hover:bg-red-50">
+            class="hidden w-full rounded-xl border border-red-300 bg-white px-5 py-3 text-sm font-semibold text-red-700 hover:bg-red-50 sm:w-auto">
             Logout
           </button>
         </div>
@@ -41,8 +82,8 @@
     </header>
 
     <section class="write-panel hidden grid gap-6 lg:grid-cols-2">
-      <div class="rounded-2xl border border-blue-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-blue-600">
+      <div class="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-blue-600 sm:text-xl">
           👤 Add New Player
         </h2>
 
@@ -51,7 +92,7 @@
             class="write-control w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
 
           <button onclick="addPlayer()"
-            class="write-control rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+            class="write-control w-full rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300 sm:w-auto">
             Add Player
           </button>
         </div>
@@ -60,33 +101,33 @@
           Total Players: <span id="totalPlayers">0</span>
         </p>
 
-        <div id="playerBadges" class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4"></div>
+        <div id="playerBadges" class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4"></div>
       </div>
 
-      <div class="rounded-2xl border border-purple-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-purple-600">
+      <div class="rounded-2xl border border-purple-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-purple-600 sm:text-xl">
           👥 Select 4 Players for Game
         </h2>
 
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <select id="player1"
-            class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+            class="write-control player-select w-full rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
           <select id="player2"
-            class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+            class="write-control player-select w-full rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
           <select id="player3"
-            class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+            class="write-control player-select w-full rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
           <select id="player4"
-            class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+            class="write-control player-select w-full rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
         </div>
 
         <div class="mt-5 text-center">
           <button onclick="runLottery()"
-            class="write-control rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+            class="write-control w-full rounded-xl bg-purple-600 px-5 py-3 font-semibold text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-slate-300 sm:w-auto sm:px-6">
             🎲 Random Lottery for Turn Order
           </button>
         </div>
 
-        <div id="lotteryInfo" class="mt-5 rounded-xl border border-purple-200 bg-purple-50 p-5 text-purple-700">
+        <div id="lotteryInfo" class="mt-5 rounded-xl border border-purple-200 bg-purple-50 p-4 text-purple-700 sm:p-5">
           <p class="font-bold">🏆 Lottery decides who will play first!</p>
           <p class="mt-1 text-sm">Click the button above to randomize turn order.</p>
         </div>
@@ -94,44 +135,44 @@
     </section>
 
     <section id="turnOrderSection"
-      class="write-panel mt-6 hidden rounded-2xl border border-green-200 bg-white p-6 shadow-sm">
-      <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-green-600">
+      class="write-panel mt-6 hidden rounded-2xl border border-green-200 bg-white p-4 shadow-sm sm:p-6">
+      <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-green-600 sm:text-xl">
         🎯 Turn Order Lottery Result
       </h2>
 
-      <div id="turnOrder" class="grid gap-4 md:grid-cols-4"></div>
+      <div id="turnOrder" class="grid gap-4 sm:grid-cols-2 md:grid-cols-4"></div>
     </section>
 
-    <section class="write-panel mt-6 hidden rounded-2xl border border-orange-200 bg-white p-6 shadow-sm">
-      <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-orange-500">
+    <section class="write-panel mt-6 hidden rounded-2xl border border-orange-200 bg-white p-4 shadow-sm sm:p-6">
+      <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-orange-500 sm:text-xl">
         🏆 Enter Game Result Position
       </h2>
 
-      <div id="resultInputs" class="grid gap-4 md:grid-cols-4"></div>
+      <div id="resultInputs" class="grid gap-4 sm:grid-cols-2 md:grid-cols-4"></div>
 
       <div class="mt-5 text-center">
         <button onclick="saveGame()"
-          class="write-control rounded-xl bg-green-600 px-8 py-3 font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+          class="write-control w-full rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-300 sm:w-auto sm:px-8">
           💾 Save Game Result
         </button>
       </div>
     </section>
 
     <section class="mt-6 grid gap-6 lg:grid-cols-2">
-      <div class="rounded-2xl border border-blue-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-blue-600">
+      <div class="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-blue-600 sm:text-xl">
           🏅 Leaderboard
         </h2>
 
-        <div class="overflow-x-auto">
-          <table class="w-full overflow-hidden rounded-xl border border-slate-200 text-left">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full table-fixed overflow-hidden rounded-xl border border-slate-200 text-left text-sm sm:text-base">
             <thead class="bg-blue-50 text-blue-700">
               <tr>
-                <th class="p-3">Rank</th>
-                <th class="p-3">Player</th>
-                <th class="p-3">Games</th>
-                <th class="p-3">Wins</th>
-                <th class="p-3">Points</th>
+                <th class="w-14 p-2 sm:p-3">Rank</th>
+                <th class="p-2 sm:p-3">Player</th>
+                <th class="w-16 p-2 sm:p-3">Games</th>
+                <th class="w-14 p-2 sm:p-3">Wins</th>
+                <th class="w-16 p-2 sm:p-3">Points</th>
               </tr>
             </thead>
             <tbody id="leaderboardBody"></tbody>
@@ -143,8 +184,8 @@
         </div>
       </div>
 
-      <div class="rounded-2xl border border-purple-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-purple-600">
+      <div class="rounded-2xl border border-purple-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-purple-600 sm:text-xl">
           📜 Game History
         </h2>
 

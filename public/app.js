@@ -34,7 +34,7 @@ async function promptForPin() {
   }
 
   const result = await Swal.fire({
-    title: "Enter write PIN",
+    title: "Enter secret PIN",
     input: "password",
     inputPlaceholder: "PIN code",
     inputAttributes: {
@@ -59,7 +59,11 @@ async function unlockWrites() {
 
   sessionStorage.setItem(WRITE_PIN_KEY, pin);
   updateWriteControls();
-  await showAlert("success", "Unlocked", "You can now add players and save games in this tab.");
+  await showAlert(
+    "success",
+    "Unlocked",
+    "You can now add players and save games in this tab.",
+  );
   return true;
 }
 
@@ -77,7 +81,11 @@ function lockWrites() {
 
 async function switchToReadOnly() {
   lockWrites();
-  await showAlert("success", "Read-only mode", "Write controls are locked in this tab.");
+  await showAlert(
+    "success",
+    "Read-only mode",
+    "Write controls are locked in this tab.",
+  );
 }
 
 function getAuthHeaders() {
@@ -98,14 +106,14 @@ function updateWriteControls() {
   const lockButton = document.getElementById("lockButton");
 
   if (status) {
-    status.textContent = unlocked ? "Write mode unlocked" : "View-only mode";
+    status.textContent = unlocked ? "Write mode" : "View mode";
     status.className = unlocked
       ? "rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700"
       : "rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600";
   }
 
   if (unlockButton) {
-    unlockButton.textContent = unlocked ? "Change PIN" : "Unlock";
+    unlockButton.textContent = unlocked ? "Change PIN" : "Login";
   }
 
   if (lockButton) {
@@ -189,13 +197,23 @@ async function addPlayer() {
   }
 
   if (name.length > 40) {
-    await showAlert("warning", "Name too long", "Player name must be 40 characters or less.");
+    await showAlert(
+      "warning",
+      "Name too long",
+      "Player name must be 40 characters or less.",
+    );
     return;
   }
 
-  const exists = players.some((player) => player.toLowerCase() === name.toLowerCase());
+  const exists = players.some(
+    (player) => player.toLowerCase() === name.toLowerCase(),
+  );
   if (exists) {
-    await showAlert("warning", "Player already exists", `${name} is already in the player list.`);
+    await showAlert(
+      "warning",
+      "Player already exists",
+      `${name} is already in the player list.`,
+    );
     return;
   }
 
@@ -219,11 +237,15 @@ function renderPlayers() {
   document.getElementById("totalPlayers").textContent = players.length;
 
   const playerBadges = document.getElementById("playerBadges");
-  playerBadges.innerHTML = players.map((player) => `
+  playerBadges.innerHTML = players
+    .map(
+      (player) => `
     <div class="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-center text-sm font-semibold text-blue-700">
       ${escapeHtml(player)}
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 }
 
 function renderSelects() {
@@ -234,10 +256,13 @@ function renderSelects() {
 
     select.innerHTML = `
       <option value="">Select Player</option>
-      ${players.map((player) => {
-        const disabled = selectedValues.includes(player) && player !== currentValue;
-        return `<option value="${escapeHtml(player)}" ${disabled ? "disabled" : ""}>${escapeHtml(player)}</option>`;
-      }).join("")}
+      ${players
+        .map((player) => {
+          const disabled =
+            selectedValues.includes(player) && player !== currentValue;
+          return `<option value="${escapeHtml(player)}" ${disabled ? "disabled" : ""}>${escapeHtml(player)}</option>`;
+        })
+        .join("")}
     `;
 
     if (players.includes(currentValue)) {
@@ -249,7 +274,11 @@ function renderSelects() {
         select.value = "";
         lotteryOrder = [];
         document.getElementById("turnOrderSection").classList.add("hidden");
-        await showAlert("warning", "Duplicate player", "Please select each player only once.");
+        await showAlert(
+          "warning",
+          "Duplicate player",
+          "Please select each player only once.",
+        );
       }
 
       renderSelects();
@@ -260,7 +289,9 @@ function renderSelects() {
 }
 
 function getSelectedPositions() {
-  return [...document.querySelectorAll(".position-select")].map((select) => select.value);
+  return [...document.querySelectorAll(".position-select")].map(
+    (select) => select.value,
+  );
 }
 
 function renderResultInputs() {
@@ -277,31 +308,40 @@ function renderResultInputs() {
     return;
   }
 
-  resultInputs.innerHTML = selected.map((player, index) => {
-    const currentPosition = previousPositions[index] || "";
-    const selectedPositions = previousPositions.filter(Boolean);
+  resultInputs.innerHTML = selected
+    .map((player, index) => {
+      const currentPosition = previousPositions[index] || "";
+      const selectedPositions = previousPositions.filter(Boolean);
 
-    return `
+      return `
       <div class="rounded-xl border border-slate-200 p-4">
         <label class="mb-3 block text-center font-bold">${escapeHtml(player)}</label>
         <select data-player="${escapeHtml(player)}" class="write-control position-select w-full rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400">
           <option value="">Position</option>
-          ${[1, 2, 3, 4].map((position) => {
-            const value = String(position);
-            const disabled = selectedPositions.includes(value) && value !== currentPosition;
-            const label = `${position}${position === 1 ? "st" : position === 2 ? "nd" : position === 3 ? "rd" : "th"} (${position})`;
-            return `<option value="${value}" ${disabled ? "disabled" : ""} ${value === currentPosition ? "selected" : ""}>${label}</option>`;
-          }).join("")}
+          ${[1, 2, 3, 4]
+            .map((position) => {
+              const value = String(position);
+              const disabled =
+                selectedPositions.includes(value) && value !== currentPosition;
+              const label = `${position}${position === 1 ? "st" : position === 2 ? "nd" : position === 3 ? "rd" : "th"} (${position})`;
+              return `<option value="${value}" ${disabled ? "disabled" : ""} ${value === currentPosition ? "selected" : ""}>${label}</option>`;
+            })
+            .join("")}
         </select>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   document.querySelectorAll(".position-select").forEach((select) => {
     select.onchange = async () => {
       if (hasDuplicateValues(getSelectedPositions())) {
         select.value = "";
-        await showAlert("warning", "Duplicate position", "Please select each result position only once.");
+        await showAlert(
+          "warning",
+          "Duplicate position",
+          "Please select each result position only once.",
+        );
       }
 
       renderResultInputs();
@@ -316,7 +356,11 @@ async function runLottery() {
   const selected = getSelectedPlayers();
 
   if (selected.length !== 4 || new Set(selected).size !== 4) {
-    await showAlert("warning", "Select 4 players", "Please select 4 different players.");
+    await showAlert(
+      "warning",
+      "Select 4 players",
+      "Please select 4 different players.",
+    );
     return;
   }
 
@@ -327,14 +371,18 @@ async function runLottery() {
 
   turnOrderSection.classList.remove("hidden");
 
-  turnOrder.innerHTML = lotteryOrder.map((player, index) => `
+  turnOrder.innerHTML = lotteryOrder
+    .map(
+      (player, index) => `
     <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
       <div class="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl font-bold text-white">
         ${index + 1}
       </div>
       <p class="font-bold">${escapeHtml(player)}</p>
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 
   document.getElementById("lotteryInfo").innerHTML = `
     <p class="font-bold">Lottery completed!</p>
@@ -348,12 +396,20 @@ async function saveGame() {
   const selected = getSelectedPlayers();
 
   if (selected.length !== 4 || new Set(selected).size !== 4) {
-    await showAlert("warning", "Select 4 players", "Please select 4 different players.");
+    await showAlert(
+      "warning",
+      "Select 4 players",
+      "Please select 4 different players.",
+    );
     return;
   }
 
   if (lotteryOrder.length !== 4) {
-    await showAlert("warning", "Run lottery first", "Please run lottery before saving the game.");
+    await showAlert(
+      "warning",
+      "Run lottery first",
+      "Please run lottery before saving the game.",
+    );
     return;
   }
 
@@ -369,7 +425,11 @@ async function saveGame() {
     positions.includes(0) ||
     new Set(positions).size !== 4
   ) {
-    await showAlert("warning", "Invalid positions", "Please select unique positions 1, 2, 3 and 4.");
+    await showAlert(
+      "warning",
+      "Invalid positions",
+      "Please select unique positions 1, 2, 3 and 4.",
+    );
     return;
   }
 
@@ -449,11 +509,12 @@ function renderLeaderboard() {
   const leaderboard = getLeaderboard();
   const tbody = document.getElementById("leaderboardBody");
 
-  tbody.innerHTML = leaderboard.map((row, index) => {
-    const medals = ["1", "2", "3"];
-    const rank = medals[index] || index + 1;
+  tbody.innerHTML = leaderboard
+    .map((row, index) => {
+      const medals = ["1", "2", "3"];
+      const rank = medals[index] || index + 1;
 
-    return `
+      return `
       <tr class="border-t border-slate-200">
         <td class="p-3 font-bold">${rank}</td>
         <td class="p-3 font-semibold">${escapeHtml(row.player)}</td>
@@ -462,7 +523,8 @@ function renderLeaderboard() {
         <td class="p-3 font-bold text-green-600">${row.points}</td>
       </tr>
     `;
-  }).join("");
+    })
+    .join("");
 }
 
 function renderHistory() {
@@ -477,10 +539,14 @@ function renderHistory() {
     return;
   }
 
-  history.innerHTML = [...games].reverse().map((game) => {
-    const sortedResults = [...game.results].sort((a, b) => a.position - b.position);
+  history.innerHTML = [...games]
+    .reverse()
+    .map((game) => {
+      const sortedResults = [...game.results].sort(
+        (a, b) => a.position - b.position,
+      );
 
-    return `
+      return `
       <div class="rounded-xl border border-purple-200 bg-purple-50 p-4">
         <p class="mb-3 font-semibold text-slate-700">
           ${new Date(game.date).toLocaleString()}
@@ -495,11 +561,16 @@ function renderHistory() {
         </p>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 }
 
 updateWriteControls();
 
 loadData().catch(() => {
-  showAlert("error", "Could not load data", "Please refresh the page and try again.");
+  showAlert(
+    "error",
+    "Could not load data",
+    "Please refresh the page and try again.",
+  );
 });

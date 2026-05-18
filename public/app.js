@@ -142,7 +142,8 @@ function updateWriteControls() {
   }
 
   if (unlockButton) {
-    unlockButton.textContent = unlocked ? "Change PIN" : "Login";
+    unlockButton.textContent = unlocked ? "" : "Login";
+    unlockButton.classList.toggle("hidden", unlocked);
   }
 
   if (lockButton) {

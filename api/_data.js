@@ -16,14 +16,10 @@ const hasBlobStorage = isVercel && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 export function defaultData() {
   return {
     players: [
-      "Aman",
-      "Vikas",
-      "Rahul",
-      "Suresh",
-      "Rohit",
-      "Neha",
-      "Karan",
-      "Pooja",
+      "Babu Vai",
+      "Saidul",
+      "Adif",
+      "Moon"
     ],
     games: [],
   };

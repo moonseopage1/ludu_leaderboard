@@ -15,23 +15,16 @@ const hasBlobStorage = isVercel && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 export function defaultData() {
   return {
-    players: [
-      "Aman",
-      "Vikas",
-      "Rahul",
-      "Suresh",
-      "Rohit",
-      "Neha",
-      "Karan",
-      "Pooja",
-    ],
+    players: ["Babu Vai", "Saidul", "Adif", "Moon"],
     games: [],
   };
 }
 
 function normalizeData(data) {
   return {
-    players: Array.isArray(data?.players) ? data.players : defaultData().players,
+    players: Array.isArray(data?.players)
+      ? data.players
+      : defaultData().players,
     games: Array.isArray(data?.games) ? data.games : [],
   };
 }
@@ -47,7 +40,11 @@ async function readFileData() {
 }
 
 async function saveFileData(data) {
-  await writeFile(DATA_FILE, JSON.stringify(normalizeData(data), null, 2), "utf-8");
+  await writeFile(
+    DATA_FILE,
+    JSON.stringify(normalizeData(data), null, 2),
+    "utf-8",
+  );
 }
 
 async function streamToText(stream) {

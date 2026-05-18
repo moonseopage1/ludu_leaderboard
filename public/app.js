@@ -57,14 +57,43 @@ async function unlockWrites() {
   const pin = await promptForPin();
   if (!pin) return false;
 
-  sessionStorage.setItem(WRITE_PIN_KEY, pin);
-  updateWriteControls();
-  await showAlert(
-    "success",
-    "Unlocked",
-    "You can now add players and save games in this tab.",
-  );
-  return true;
+  try {
+    // Use POST /api/player with an empty name as a safe way to validate the PIN:
+    const res = await fetch(`${API}/player`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Write-Pin": pin,
+      },
+      body: JSON.stringify({ name: "" }),
+    });
+
+    const error = await res.json().catch(() => ({}));
+    const errorMessage = error.error || error.message || "";
+
+    if (res.status === 401) {
+      await showAlert("error", "Wrong PIN", error.details || "");
+      return false;
+    }
+
+    // Expected failure when PIN is valid but name is missing.
+    if (res.status === 400 && errorMessage === "Player name is required") {
+      sessionStorage.setItem(WRITE_PIN_KEY, pin);
+      updateWriteControls();
+      await showAlert(
+        "success",
+        "Unlocked",
+        "You can now add players and save games in this tab.",
+      );
+      return true;
+    }
+
+    await showAlert("error", "Could not verify PIN", error.details || "");
+    return false;
+  } catch (err) {
+    await showAlert("error", "Network error", "Could not verify PIN.");
+    return false;
+  }
 }
 
 async function ensureWriteAccess() {

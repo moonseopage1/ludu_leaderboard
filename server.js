@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 
 console.log("Server directory:", __dirname);
 console.log("Public path:", path.join(__dirname, "public"));
+console.log("ENV LUDU_WRITE_PIN =", process.env.LUDU_WRITE_PIN);
 
 app.use(cors());
 app.use(express.json());
@@ -30,6 +31,7 @@ app.get("/api/data", async (req, res) => {
 });
 
 app.post("/api/player", async (req, res) => {
+  console.log("POST /api/player headers:", req.headers);
   if (!requireWritePin(req, res)) return;
 
   const data = await readData();
@@ -70,7 +72,9 @@ app.post("/api/game", async (req, res) => {
   if (!requireWritePin(req, res)) return;
 
   const data = await readData();
-  const lotteryOrder = Array.isArray(req.body.lotteryOrder) ? req.body.lotteryOrder : [];
+  const lotteryOrder = Array.isArray(req.body.lotteryOrder)
+    ? req.body.lotteryOrder
+    : [];
   const results = Array.isArray(req.body.results) ? req.body.results : [];
   const resultPlayers = results.map((result) => result.player);
   const positions = results.map((result) => Number(result.position));
@@ -83,7 +87,8 @@ app.post("/api/game", async (req, res) => {
   ) {
     return res.status(400).json({
       error: "Invalid players",
-      details: "Please select 4 different saved players before saving the game.",
+      details:
+        "Please select 4 different saved players before saving the game.",
     });
   }
 

@@ -1,4 +1,5 @@
 import { loadLocalEnv } from "./_env.js";
+import bcrypt from "bcryptjs";
 
 function getWritePin() {
   loadLocalEnv();
@@ -20,12 +21,29 @@ export function requireWritePin(req, res) {
   if (!writePin) {
     res.status(500).json({
       error: "Write PIN is not configured",
-      details: "Set LUDU_WRITE_PIN in your local .env and Vercel environment variables.",
+      details:
+        "Set LUDU_WRITE_PIN in your local .env and Vercel environment variables.",
     });
     return false;
   }
 
-  if (getSubmittedPin(req).trim() !== writePin) {
+  const submitted = getSubmittedPin(req).toString().trim();
+
+  // If the stored write PIN looks like a bcrypt hash (starts with $2), use bcrypt to compare.
+  if (writePin.startsWith("$2")) {
+    const match = bcrypt.compareSync(submitted, writePin);
+    if (!match) {
+      res.status(401).json({
+        error: "Invalid PIN",
+        details: "Enter the correct PIN to add players or save games.",
+      });
+      return false;
+    }
+    return true;
+  }
+
+  // Fallback: plain-text comparison
+  if (submitted !== writePin) {
     res.status(401).json({
       error: "Invalid PIN",
       details: "Enter the correct PIN to add players or save games.",

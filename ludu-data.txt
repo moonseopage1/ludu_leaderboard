@@ -1,13 +1,14 @@
 {
   "players": [
-    "Babu Vai",
-    "Saidul",
-    "Adif",
-    "Moon",
-    "Habu vai",
-    "TestUser",
-    "Dadu Vai",
-    "GGG"
+    "Aman",
+    "Vikas",
+    "Rahul",
+    "Suresh",
+    "Rohit",
+    "Neha",
+    "Karan",
+    "Pooja",
+    "Dabu"
   ],
   "games": []
 }

@@ -3,15 +3,16 @@ import os from "os";
 import path from "path";
 import { get, put } from "@vercel/blob";
 
-const projectDataPath = path.join(process.cwd(), "ludu-data.txt");
+const DATA_FILE_NAME = "ludu-data.json";
+const projectDataPath = path.join(process.cwd(), DATA_FILE_NAME);
 let DATA_FILE = projectDataPath;
-const BLOB_DATA_PATH = "ludu-data.json";
+const BLOB_DATA_PATH = DATA_FILE_NAME;
 const hasBlobStorage = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 try {
   fs.accessSync(projectDataPath, fs.constants.W_OK);
 } catch {
-  DATA_FILE = path.join(os.tmpdir(), "ludu-data.txt");
+  DATA_FILE = path.join(os.tmpdir(), DATA_FILE_NAME);
 }
 
 export function defaultData() {

@@ -1,0 +1,45 @@
+{
+  "players": [
+    "Babu Vai",
+    "Saidul",
+    "Adif",
+    "Moon",
+    "Habu vai",
+    "TestUser",
+    "Dadu Vai",
+    "GGG",
+    "fdg",
+    "Sonet",
+    "Habu"
+  ],
+  "games": [
+    {
+      "id": 1779070845741,
+      "date": "2026-05-18T02:20:45.742Z",
+      "lotteryOrder": [
+        "Saidul",
+        "Adif",
+        "Babu Vai",
+        "Moon"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 4
+        },
+        {
+          "player": "Saidul",
+          "position": 3
+        },
+        {
+          "player": "Adif",
+          "position": 2
+        },
+        {
+          "player": "Moon",
+          "position": 1
+        }
+      ]
+    }
+  ]
+}

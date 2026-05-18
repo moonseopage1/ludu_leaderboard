@@ -1,10 +1,10 @@
 # Ludu Leaderboard - Vercel Deployment Guide
 
-This project runs locally with `ludu-data.txt`, but Vercel cannot permanently save changes to files inside the deployed project. The Vercel API functions now use Vercel Blob when `BLOB_READ_WRITE_TOKEN` is available.
+This project runs locally with `ludu-data.json`, but Vercel cannot permanently save changes to files inside the deployed project. The Vercel API functions use Vercel Blob when `BLOB_READ_WRITE_TOKEN` is available.
 
 ## What changed
 
-- Local `node server.js` still reads and writes `ludu-data.txt`.
+- Local `node server.js` reads and writes `ludu-data.json`.
 - Vercel `api/` functions read and write `ludu-data.json` in Vercel Blob.
 - `@vercel/blob` was added to `package.json`.
 - The app requires Node.js 20 or newer.
@@ -35,7 +35,7 @@ Then add a player or save a game in the UI. Refresh the page and open the app ag
 
 ## Optional local Vercel test
 
-If you want to test Blob locally instead of local TXT storage:
+If you want to test Blob locally instead of local JSON file storage:
 
 ```bash
 npm install -g vercel
@@ -45,7 +45,7 @@ vercel env pull .env.local
 vercel dev
 ```
 
-Without `BLOB_READ_WRITE_TOKEN`, local development continues to use `ludu-data.txt`.
+Without `BLOB_READ_WRITE_TOKEN`, local development continues to use `ludu-data.json`.
 
 ## Troubleshooting
 

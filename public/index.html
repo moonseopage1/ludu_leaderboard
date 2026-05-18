@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,16 +22,13 @@
         </div>
 
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <div id="writeStatus" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">
+          <div id="writeStatus"
+            class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">
             View-only mode
           </div>
 
-          <button
-            id="unlockButton"
-            type="button"
-            onclick="unlockWrites()"
-            class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800"
-          >
+          <button id="unlockButton" type="button" onclick="unlockWrites()"
+            class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800">
             Unlock
           </button>
         </div>
@@ -44,17 +42,11 @@
         </h2>
 
         <div class="flex flex-col gap-3 sm:flex-row">
-          <input
-            id="playerName"
-            type="text"
-            placeholder="Enter player name"
-            class="write-control w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
-          />
+          <input id="playerName" type="text" placeholder="Enter player name"
+            class="write-control w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
 
-          <button
-            onclick="addPlayer()"
-            class="write-control rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-          >
+          <button onclick="addPlayer()"
+            class="write-control rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300">
             Add Player
           </button>
         </div>
@@ -72,17 +64,19 @@
         </h2>
 
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <select id="player1" class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
-          <select id="player2" class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
-          <select id="player3" class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
-          <select id="player4" class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+          <select id="player1"
+            class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+          <select id="player2"
+            class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+          <select id="player3"
+            class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+          <select id="player4"
+            class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
         </div>
 
         <div class="mt-5 text-center">
-          <button
-            onclick="runLottery()"
-            class="write-control rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-          >
+          <button onclick="runLottery()"
+            class="write-control rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-slate-300">
             🎲 Random Lottery for Turn Order
           </button>
         </div>
@@ -110,10 +104,8 @@
       <div id="resultInputs" class="grid gap-4 md:grid-cols-4"></div>
 
       <div class="mt-5 text-center">
-        <button
-          onclick="saveGame()"
-          class="write-control rounded-xl bg-green-600 px-8 py-3 font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-        >
+        <button onclick="saveGame()"
+          class="write-control rounded-xl bg-green-600 px-8 py-3 font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-300">
           💾 Save Game Result
         </button>
       </div>
@@ -154,11 +146,12 @@
       </div>
     </section>
 
-    <footer class="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-700">
-      ℹ️ Local data is stored in <strong>ludu-data.json</strong>; Vercel saves the same JSON in persistent storage.
+    <footer class="mt-10 border-t pt-5 text-center text-sm text-slate-500">
+      © 2026 Ludu Leaderboard. All rights reserved.
     </footer>
   </main>
 
   <script src="./app.js"></script>
 </body>
+
 </html>

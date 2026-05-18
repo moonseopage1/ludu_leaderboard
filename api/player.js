@@ -1,4 +1,5 @@
 import { readData, saveData, parseJsonBody, addCorsHeaders } from "./_data.js";
+import { requireWritePin } from "./_auth.js";
 
 export default async function handler(req, res) {
   addCorsHeaders(res);
@@ -15,10 +16,25 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || (await parseJsonBody(req));
+    req.body = body;
+
+    if (!requireWritePin(req, res)) return;
+
     const name = body.name?.trim();
 
     if (!name) {
-      res.status(400).json({ message: "Player name is required" });
+      res.status(400).json({
+        error: "Player name is required",
+        details: "Please enter a player name.",
+      });
+      return;
+    }
+
+    if (name.length > 40) {
+      res.status(400).json({
+        error: "Player name is too long",
+        details: "Player name must be 40 characters or less.",
+      });
       return;
     }
 
@@ -27,10 +43,16 @@ export default async function handler(req, res) {
       (player) => player.toLowerCase() === name.toLowerCase(),
     );
 
-    if (!exists) {
-      data.players.push(name);
-      await saveData(data);
+    if (exists) {
+      res.status(409).json({
+        error: "Player already exists",
+        details: `${name} is already in the player list.`,
+      });
+      return;
     }
+
+    data.players.push(name);
+    await saveData(data);
 
     res.status(200).json(data);
   } catch (error) {

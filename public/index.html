@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ludu Leaderboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-900">
@@ -19,8 +20,19 @@
           </div>
         </div>
 
-        <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
-          ✅ Data saved persistently
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div id="writeStatus" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">
+            View-only mode
+          </div>
+
+          <button
+            id="unlockButton"
+            type="button"
+            onclick="unlockWrites()"
+            class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+          >
+            Unlock
+          </button>
         </div>
       </div>
     </header>
@@ -36,12 +48,12 @@
             id="playerName"
             type="text"
             placeholder="Enter player name"
-            class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500"
+            class="write-control w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
           />
 
           <button
             onclick="addPlayer()"
-            class="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+            class="write-control rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             Add Player
           </button>
@@ -60,16 +72,16 @@
         </h2>
 
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <select id="player1" class="player-select rounded-xl border border-slate-300 px-4 py-3"></select>
-          <select id="player2" class="player-select rounded-xl border border-slate-300 px-4 py-3"></select>
-          <select id="player3" class="player-select rounded-xl border border-slate-300 px-4 py-3"></select>
-          <select id="player4" class="player-select rounded-xl border border-slate-300 px-4 py-3"></select>
+          <select id="player1" class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+          <select id="player2" class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+          <select id="player3" class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
+          <select id="player4" class="write-control player-select rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"></select>
         </div>
 
         <div class="mt-5 text-center">
           <button
             onclick="runLottery()"
-            class="rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700"
+            class="write-control rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             🎲 Random Lottery for Turn Order
           </button>
@@ -100,7 +112,7 @@
       <div class="mt-5 text-center">
         <button
           onclick="saveGame()"
-          class="rounded-xl bg-green-600 px-8 py-3 font-semibold text-white hover:bg-green-700"
+          class="write-control rounded-xl bg-green-600 px-8 py-3 font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           💾 Save Game Result
         </button>

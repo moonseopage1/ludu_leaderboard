@@ -12,7 +12,8 @@
     "Sonet",
     "Habu",
     "Kabu",
-    "gg"
+    "gg",
+    "Mr Player"
   ],
   "games": [
     {
@@ -40,6 +41,34 @@
         {
           "player": "Moon",
           "position": 1
+        }
+      ]
+    },
+    {
+      "id": 1779074023138,
+      "date": "2026-05-18T03:13:43.138Z",
+      "lotteryOrder": [
+        "Saidul",
+        "Adif",
+        "Babu Vai",
+        "Moon"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 1
+        },
+        {
+          "player": "Saidul",
+          "position": 2
+        },
+        {
+          "player": "Adif",
+          "position": 3
+        },
+        {
+          "player": "Moon",
+          "position": 4
         }
       ]
     }

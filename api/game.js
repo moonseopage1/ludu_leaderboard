@@ -1,4 +1,5 @@
 import { readData, saveData, parseJsonBody, addCorsHeaders } from "./_data.js";
+import { requireWritePin } from "./_auth.js";
 
 export default async function handler(req, res) {
   addCorsHeaders(res);
@@ -15,13 +16,60 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || (await parseJsonBody(req));
+    req.body = body;
+
+    if (!requireWritePin(req, res)) return;
+
     const data = await readData();
+    const lotteryOrder = Array.isArray(body.lotteryOrder) ? body.lotteryOrder : [];
+    const results = Array.isArray(body.results) ? body.results : [];
+    const resultPlayers = results.map((result) => result.player);
+    const positions = results.map((result) => Number(result.position));
+    const validPositions = [1, 2, 3, 4];
+
+    if (
+      lotteryOrder.length !== 4 ||
+      new Set(lotteryOrder).size !== 4 ||
+      lotteryOrder.some((player) => !data.players.includes(player))
+    ) {
+      res.status(400).json({
+        error: "Invalid players",
+        details: "Please select 4 different saved players before saving the game.",
+      });
+      return;
+    }
+
+    if (
+      results.length !== 4 ||
+      new Set(resultPlayers).size !== 4 ||
+      resultPlayers.some((player) => !lotteryOrder.includes(player))
+    ) {
+      res.status(400).json({
+        error: "Invalid result players",
+        details: "Each selected player needs exactly one result.",
+      });
+      return;
+    }
+
+    if (
+      positions.some((position) => !validPositions.includes(position)) ||
+      new Set(positions).size !== 4
+    ) {
+      res.status(400).json({
+        error: "Invalid positions",
+        details: "Please select unique positions 1, 2, 3 and 4.",
+      });
+      return;
+    }
 
     const game = {
       id: Date.now(),
       date: new Date().toISOString(),
-      lotteryOrder: body.lotteryOrder || [],
-      results: body.results || [],
+      lotteryOrder,
+      results: results.map((result) => ({
+        player: result.player,
+        position: Number(result.position),
+      })),
     };
 
     data.games.push(game);

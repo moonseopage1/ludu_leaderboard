@@ -37,6 +37,12 @@ ludu-data.json
 
 Local development saves data in `ludu-data.json`. Vercel deployment saves the same JSON data as a private Vercel Blob object named `ludu-data.json`. See `VERCEL_DEPLOYMENT.md`.
 
+Write actions require this environment variable:
+
+```txt
+LUDU_WRITE_PIN
+```
+
 ## Scoring
 
 ```txt

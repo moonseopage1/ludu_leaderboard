@@ -2,13 +2,16 @@ import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { get, put } from "@vercel/blob";
+import { loadLocalEnv } from "./_env.js";
+
+loadLocalEnv();
 
 const DATA_FILE_NAME = "ludu-data.json";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DATA_FILE = path.join(__dirname, "..", DATA_FILE_NAME);
 const isVercel = Boolean(process.env.VERCEL);
-const hasBlobStorage = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+const hasBlobStorage = isVercel && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 export function defaultData() {
   return {
@@ -62,7 +65,10 @@ async function streamToText(stream) {
 }
 
 async function readBlobData() {
-  const result = await get(DATA_FILE_NAME, { access: "private" });
+  const result = await get(DATA_FILE_NAME, {
+    access: "private",
+    useCache: false,
+  });
 
   if (!result?.stream) {
     const data = await readFileData();
@@ -114,7 +120,7 @@ export async function saveData(data) {
 export function addCorsHeaders(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Write-Pin");
 }
 export function parseJsonBody(req) {
   return new Promise((resolve, reject) => {

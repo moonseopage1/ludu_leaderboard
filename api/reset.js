@@ -1,4 +1,5 @@
 import { defaultData, saveData, addCorsHeaders } from "./_data.js";
+import { requireWritePin } from "./_auth.js";
 
 export default async function handler(req, res) {
   addCorsHeaders(res);
@@ -14,6 +15,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    if (!requireWritePin(req, res)) return;
+
     const data = defaultData();
     await saveData(data);
     res.status(200).json(data);

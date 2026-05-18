@@ -16,7 +16,13 @@ Vercel deployments cannot write back into deployed project files. On Vercel, the
 BLOB_READ_WRITE_TOKEN
 ```
 
-6. Redeploy the project.
+6. Add your write PIN in **Settings -> Environment Variables**:
+
+```txt
+LUDU_WRITE_PIN
+```
+
+7. Redeploy the project.
 
 After redeploying, test:
 
@@ -31,3 +37,4 @@ Then add a player in the UI. The API will save to the private `ludu-data.json` B
 - Local `npm start`: reads and writes project file `ludu-data.json`.
 - Vercel with `BLOB_READ_WRITE_TOKEN`: reads and writes private Blob object `ludu-data.json`.
 - Vercel without `BLOB_READ_WRITE_TOKEN`: can read the deployed seed JSON, but cannot save changes.
+- `LUDU_WRITE_PIN` is required for add player, save game, and reset actions.

@@ -30,6 +30,9 @@ export default async function handler(req, res) {
     res.status(200).json(data);
   } catch (error) {
     console.error("Error saving game:", error);
-    res.status(500).json({ error: "Failed to save game" });
+    res.status(500).json({
+      error: "Failed to save game",
+      details: error.message,
+    });
   }
 }

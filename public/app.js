@@ -36,11 +36,17 @@ async function addPlayer() {
     return;
   }
 
-  await fetch(`${API}/player`, {
+  const res = await fetch(`${API}/player`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name })
   });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    alert(error.details || error.error || "Failed to add player.");
+    return;
+  }
 
   input.value = "";
   await loadData();
@@ -165,7 +171,7 @@ async function saveGame() {
     return;
   }
 
-  await fetch(`${API}/game`, {
+  const res = await fetch(`${API}/game`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -173,6 +179,12 @@ async function saveGame() {
       results
     })
   });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    alert(error.details || error.error || "Failed to save game.");
+    return;
+  }
 
   lotteryOrder = [];
   document.getElementById("turnOrderSection").classList.add("hidden");

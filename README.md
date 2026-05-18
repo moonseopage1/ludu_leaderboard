@@ -7,7 +7,7 @@ Simple Ludu leaderboard app using:
 - JavaScript
 - Node.js Express
 - JSON file storage locally
-- JSON file storage on Vercel
+- Vercel Blob storage on Vercel
 
 ## Install
 
@@ -35,7 +35,7 @@ Local development saves data in:
 ludu-data.json
 ```
 
-Local and Vercel API routes save data in `ludu-data.json`. See `VERCEL_DEPLOYMENT.md`.
+Local development saves data in `ludu-data.json`. Vercel deployment saves the same JSON data as a private Vercel Blob object named `ludu-data.json`. See `VERCEL_DEPLOYMENT.md`.
 
 ## Scoring
 

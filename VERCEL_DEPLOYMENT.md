@@ -1,38 +1,33 @@
 # Ludu Leaderboard - Vercel Deployment Guide
 
-This project saves leaderboard data in `ludu-data.json`.
+Local development writes to `ludu-data.json` in this project folder.
 
-## What changed
+Vercel deployments cannot write back into deployed project files. On Vercel, the app saves the same JSON data to a private Vercel Blob object named `ludu-data.json`.
 
-- Local `node server.js` reads and writes `ludu-data.json`.
-- Vercel `api/` functions also read and write `ludu-data.json`.
-- Vercel Blob is not used.
-- The app requires Node.js 20 or newer.
+## Fix The Live Site
 
-## Deploy
-
-1. Push the project to GitHub.
-2. Import the project in Vercel.
-3. Deploy with Node.js 20 or newer.
-
-After deploying, test:
+1. Open the project in the Vercel dashboard.
+2. Go to **Storage**.
+3. Create a **Blob** store.
+4. Choose **Private** access.
+5. Make sure Vercel adds this environment variable:
 
 ```txt
-https://your-domain.vercel.app/api/data
+BLOB_READ_WRITE_TOKEN
 ```
 
-Then add a player or save a game in the UI and refresh the page.
+6. Redeploy the project.
 
-## Data file
-
-The data file is:
+After redeploying, test:
 
 ```txt
-ludu-data.json
+https://ludu-leaderboard.vercel.app/api/data
 ```
 
-The API helper that manages this file is:
+Then add a player in the UI. The API will save to the private `ludu-data.json` Blob object.
 
-```txt
-api/_data.js
-```
+## How Storage Works
+
+- Local `npm start`: reads and writes project file `ludu-data.json`.
+- Vercel with `BLOB_READ_WRITE_TOKEN`: reads and writes private Blob object `ludu-data.json`.
+- Vercel without `BLOB_READ_WRITE_TOKEN`: can read the deployed seed JSON, but cannot save changes.

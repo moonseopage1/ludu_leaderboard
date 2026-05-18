@@ -1,11 +1,14 @@
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { get, put } from "@vercel/blob";
 
 const DATA_FILE_NAME = "ludu-data.json";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DATA_FILE = path.join(__dirname, "..", DATA_FILE_NAME);
+const isVercel = Boolean(process.env.VERCEL);
+const hasBlobStorage = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 export function defaultData() {
   return {
@@ -30,7 +33,7 @@ function normalizeData(data) {
   };
 }
 
-export async function readData() {
+async function readFileData() {
   try {
     return normalizeData(JSON.parse(await readFile(DATA_FILE, "utf-8")));
   } catch {
@@ -40,8 +43,72 @@ export async function readData() {
   }
 }
 
-export async function saveData(data) {
+async function saveFileData(data) {
   await writeFile(DATA_FILE, JSON.stringify(normalizeData(data), null, 2), "utf-8");
+}
+
+async function streamToText(stream) {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let text = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    text += decoder.decode(value, { stream: true });
+  }
+
+  return text + decoder.decode();
+}
+
+async function readBlobData() {
+  const result = await get(DATA_FILE_NAME, { access: "private" });
+
+  if (!result?.stream) {
+    const data = await readFileData();
+    await saveBlobData(data);
+    return data;
+  }
+
+  try {
+    return normalizeData(JSON.parse(await streamToText(result.stream)));
+  } catch {
+    const data = await readFileData();
+    await saveBlobData(data);
+    return data;
+  }
+}
+
+async function saveBlobData(data) {
+  await put(DATA_FILE_NAME, JSON.stringify(normalizeData(data), null, 2), {
+    access: "private",
+    allowOverwrite: true,
+    contentType: "application/json",
+    cacheControlMaxAge: 60,
+  });
+}
+
+export async function readData() {
+  if (hasBlobStorage) {
+    return readBlobData();
+  }
+
+  return readFileData();
+}
+
+export async function saveData(data) {
+  if (hasBlobStorage) {
+    await saveBlobData(data);
+    return;
+  }
+
+  if (isVercel) {
+    throw new Error(
+      "Vercel deployments cannot write to ludu-data.json directly. Add Vercel Blob storage so BLOB_READ_WRITE_TOKEN is available.",
+    );
+  }
+
+  await saveFileData(data);
 }
 
 export function addCorsHeaders(res) {

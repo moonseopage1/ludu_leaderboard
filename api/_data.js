@@ -15,7 +15,16 @@ const hasBlobStorage = isVercel && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 export function defaultData() {
   return {
+<<<<<<< HEAD
     players: ["Babu Vai", "Saidul", "Adif", "Moon"],
+=======
+    players: [
+      "Babu Vai",
+      "Saidul",
+      "Adif",
+      "Moon"
+    ],
+>>>>>>> 0bff0c0207737a39a1890f775208263b0d8c84c0
     games: [],
   };
 }

@@ -1,38 +1,4 @@
 {
-  "players": [
-    "Babu Vai",
-    "Saidul",
-    "Adif",
-    "Moon"
-  ],
-  "games": [
-    {
-      "id": 1779091006849,
-      "date": "2026-05-18T07:56:46.849Z",
-      "lotteryOrder": [
-        "Moon",
-        "Adif",
-        "Babu Vai",
-        "Saidul"
-      ],
-      "results": [
-        {
-          "player": "Babu Vai",
-          "position": 1
-        },
-        {
-          "player": "Saidul",
-          "position": 3
-        },
-        {
-          "player": "Adif",
-          "position": 2
-        },
-        {
-          "player": "Moon",
-          "position": 4
-        }
-      ]
-    }
-  ]
+  "players": ["Babu Vai", "Saidul", "Adif", "Moon"],
+  "games": []
 }

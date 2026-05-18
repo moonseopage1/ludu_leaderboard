@@ -1,12 +1,11 @@
 import express from "express";
 import cors from "cors";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { defaultData, readData, saveData } from "./api/_data.js";
 
 const app = express();
 const PORT = 4000;
-const DATA_FILE = "./ludu-data.json";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,46 +24,12 @@ app.get("/", (req, res) => {
   res.sendFile(indexPath);
 });
 
-function defaultData() {
-  return {
-    players: [
-      "Aman",
-      "Vikas",
-      "Rahul",
-      "Suresh",
-      "Rohit",
-      "Neha",
-      "Karan",
-      "Pooja",
-    ],
-    games: [],
-  };
-}
-
-function readData() {
-  if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(defaultData(), null, 2));
-  }
-
-  try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-  } catch {
-    const data = defaultData();
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    return data;
-  }
-}
-
-function saveData(data) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-}
-
-app.get("/api/data", (req, res) => {
-  res.json(readData());
+app.get("/api/data", async (req, res) => {
+  res.json(await readData());
 });
 
-app.post("/api/player", (req, res) => {
-  const data = readData();
+app.post("/api/player", async (req, res) => {
+  const data = await readData();
   const name = req.body.name?.trim();
 
   if (!name) {
@@ -77,14 +42,14 @@ app.post("/api/player", (req, res) => {
 
   if (!exists) {
     data.players.push(name);
-    saveData(data);
+    await saveData(data);
   }
 
   res.json(data);
 });
 
-app.post("/api/game", (req, res) => {
-  const data = readData();
+app.post("/api/game", async (req, res) => {
+  const data = await readData();
 
   const game = {
     id: Date.now(),
@@ -94,14 +59,14 @@ app.post("/api/game", (req, res) => {
   };
 
   data.games.push(game);
-  saveData(data);
+  await saveData(data);
 
   res.json(data);
 });
 
-app.delete("/api/reset", (req, res) => {
+app.delete("/api/reset", async (req, res) => {
   const data = defaultData();
-  saveData(data);
+  await saveData(data);
   res.json(data);
 });
 

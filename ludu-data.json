@@ -1,4 +1,235 @@
 {
-  "players": ["Babu Vai", "Saidul", "Adif", "Moon"],
-  "games": []
+  "players": [
+    "Babu Vai",
+    "Saidul",
+    "Adif",
+    "Moon",
+    "Sonet"
+  ],
+  "games": [
+    {
+      "id": 1779093623104,
+      "date": "2026-05-18T08:40:23.104Z",
+      "lotteryOrder": [
+        "Saidul",
+        "Babu Vai",
+        "Adif",
+        "Moon"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 4
+        },
+        {
+          "player": "Moon",
+          "position": 3
+        },
+        {
+          "player": "Saidul",
+          "position": 1
+        },
+        {
+          "player": "Adif",
+          "position": 2
+        }
+      ]
+    },
+    {
+      "id": 1779179916909,
+      "date": "2026-05-19T08:38:36.909Z",
+      "lotteryOrder": [
+        "Adif",
+        "Saidul",
+        "Babu Vai",
+        "Moon"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 3
+        },
+        {
+          "player": "Saidul",
+          "position": 4
+        },
+        {
+          "player": "Adif",
+          "position": 2
+        },
+        {
+          "player": "Moon",
+          "position": 1
+        }
+      ]
+    },
+    {
+      "id": 1779191258096,
+      "date": "2026-05-19T11:47:38.096Z",
+      "lotteryOrder": [
+        "Adif",
+        "Babu Vai",
+        "Saidul",
+        "Moon"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 3
+        },
+        {
+          "player": "Saidul",
+          "position": 2
+        },
+        {
+          "player": "Adif",
+          "position": 1
+        },
+        {
+          "player": "Moon",
+          "position": 4
+        }
+      ]
+    },
+    {
+      "id": 1779195689108,
+      "date": "2026-05-19T13:01:29.108Z",
+      "lotteryOrder": [
+        "Moon",
+        "Babu Vai",
+        "Adif",
+        "Saidul"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 2
+        },
+        {
+          "player": "Saidul",
+          "position": 3
+        },
+        {
+          "player": "Adif",
+          "position": 4
+        },
+        {
+          "player": "Moon",
+          "position": 1
+        }
+      ]
+    },
+    {
+      "id": 1779267217930,
+      "date": "2026-05-20T08:53:37.930Z",
+      "lotteryOrder": [
+        "Saidul",
+        "Babu Vai",
+        "Moon",
+        "Adif"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 3
+        },
+        {
+          "player": "Saidul",
+          "position": 4
+        },
+        {
+          "player": "Moon",
+          "position": 2
+        },
+        {
+          "player": "Adif",
+          "position": 1
+        }
+      ]
+    },
+    {
+      "id": 1779352152489,
+      "date": "2026-05-21T08:29:12.489Z",
+      "lotteryOrder": [
+        "Adif",
+        "Babu Vai",
+        "Moon",
+        "Saidul"
+      ],
+      "results": [
+        {
+          "player": "Moon",
+          "position": 3
+        },
+        {
+          "player": "Adif",
+          "position": 4
+        },
+        {
+          "player": "Saidul",
+          "position": 1
+        },
+        {
+          "player": "Babu Vai",
+          "position": 2
+        }
+      ]
+    },
+    {
+      "id": 1779522262366,
+      "date": "2026-05-23T07:44:22.366Z",
+      "lotteryOrder": [
+        "Saidul",
+        "Adif",
+        "Babu Vai",
+        "Moon"
+      ],
+      "results": [
+        {
+          "player": "Moon",
+          "position": 2
+        },
+        {
+          "player": "Babu Vai",
+          "position": 3
+        },
+        {
+          "player": "Saidul",
+          "position": 4
+        },
+        {
+          "player": "Adif",
+          "position": 1
+        }
+      ]
+    },
+    {
+      "id": 1779689230251,
+      "date": "2026-05-25T06:07:10.251Z",
+      "lotteryOrder": [
+        "Moon",
+        "Adif",
+        "Saidul",
+        "Babu Vai"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 1
+        },
+        {
+          "player": "Adif",
+          "position": 2
+        },
+        {
+          "player": "Moon",
+          "position": 3
+        },
+        {
+          "player": "Saidul",
+          "position": 4
+        }
+      ]
+    }
+  ]
 }

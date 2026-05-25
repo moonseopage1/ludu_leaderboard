@@ -1,5 +1,6 @@
 import { defaultData, saveData, addCorsHeaders } from "./_data.js";
 import { requireWritePin } from "./_auth.js";
+import { getDerivedData } from "./_stats.js";
 
 export default async function handler(req, res) {
   addCorsHeaders(res);
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
 
     const data = defaultData();
     await saveData(data);
-    res.status(200).json(data);
+    res.status(200).json(getDerivedData(data));
   } catch (error) {
     console.error("Error resetting data:", error);
     res.status(500).json({

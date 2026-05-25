@@ -1,5 +1,6 @@
 import { readData, saveData, parseJsonBody, addCorsHeaders } from "./_data.js";
 import { requireWritePin } from "./_auth.js";
+import { addGameResult, getDerivedData } from "./_stats.js";
 
 export default async function handler(req, res) {
   addCorsHeaders(res);
@@ -28,13 +29,14 @@ export default async function handler(req, res) {
     const validPositions = [1, 2, 3, 4];
 
     if (
-      lotteryOrder.length !== 4 ||
-      new Set(lotteryOrder).size !== 4 ||
-      lotteryOrder.some((player) => !data.players.includes(player))
+      lotteryOrder.length > 0 &&
+      (lotteryOrder.length !== 4 ||
+        new Set(lotteryOrder).size !== 4 ||
+        lotteryOrder.some((player) => !data.players.includes(player)))
     ) {
       res.status(400).json({
         error: "Invalid players",
-        details: "Please select 4 different saved players before saving the game.",
+        details: "Lottery order must contain 4 different saved players.",
       });
       return;
     }
@@ -42,11 +44,13 @@ export default async function handler(req, res) {
     if (
       results.length !== 4 ||
       new Set(resultPlayers).size !== 4 ||
-      resultPlayers.some((player) => !lotteryOrder.includes(player))
+      resultPlayers.some((player) => !data.players.includes(player)) ||
+      (lotteryOrder.length === 4 &&
+        resultPlayers.some((player) => !lotteryOrder.includes(player)))
     ) {
       res.status(400).json({
         error: "Invalid result players",
-        details: "Each selected player needs exactly one result.",
+        details: "Each selected saved player needs exactly one result.",
       });
       return;
     }
@@ -62,20 +66,17 @@ export default async function handler(req, res) {
       return;
     }
 
-    const game = {
-      id: Date.now(),
-      date: new Date().toISOString(),
+    const saved = addGameResult(data, {
       lotteryOrder,
-      results: results.map((result) => ({
-        player: result.player,
-        position: Number(result.position),
-      })),
-    };
+      results,
+    });
 
-    data.games.push(game);
-    await saveData(data);
+    await saveData(saved.data);
 
-    res.status(200).json(data);
+    res.status(200).json({
+      ...getDerivedData(saved.data),
+      completedSeason: saved.completedSeason,
+    });
   } catch (error) {
     console.error("Error saving game:", error);
     res.status(500).json({

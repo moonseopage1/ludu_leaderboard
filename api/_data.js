@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { get, put } from "@vercel/blob";
 import { loadLocalEnv } from "./_env.js";
+import { defaultData, normalizeData } from "./_stats.js";
 
 loadLocalEnv();
 
@@ -13,21 +14,7 @@ const DATA_FILE = path.join(__dirname, "..", DATA_FILE_NAME);
 const isVercel = Boolean(process.env.VERCEL);
 const hasBlobStorage = isVercel && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
-export function defaultData() {
-  return {
-    players: ["Babu Vai", "Saidul", "Adif", "Moon"],
-    games: [],
-  };
-}
-
-function normalizeData(data) {
-  return {
-    players: Array.isArray(data?.players)
-      ? data.players
-      : defaultData().players,
-    games: Array.isArray(data?.games) ? data.games : [],
-  };
-}
+export { defaultData, normalizeData };
 
 async function readFileData() {
   try {

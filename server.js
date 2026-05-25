@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { defaultData, readData, saveData } from "./api/_data.js";
 import { requireWritePin } from "./api/_auth.js";
+import { addGameResult, getDerivedData } from "./api/_stats.js";
 
 const app = express();
 const PORT = 4000;
@@ -27,7 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/data", async (req, res) => {
-  res.json(await readData());
+  res.json(getDerivedData(await readData()));
 });
 
 app.post("/api/player", async (req, res) => {
@@ -65,7 +66,7 @@ app.post("/api/player", async (req, res) => {
   data.players.push(name);
   await saveData(data);
 
-  res.json(data);
+  res.json(getDerivedData(data));
 });
 
 app.post("/api/game", async (req, res) => {
@@ -81,25 +82,27 @@ app.post("/api/game", async (req, res) => {
   const validPositions = [1, 2, 3, 4];
 
   if (
-    lotteryOrder.length !== 4 ||
-    new Set(lotteryOrder).size !== 4 ||
-    lotteryOrder.some((player) => !data.players.includes(player))
+    lotteryOrder.length > 0 &&
+    (lotteryOrder.length !== 4 ||
+      new Set(lotteryOrder).size !== 4 ||
+      lotteryOrder.some((player) => !data.players.includes(player)))
   ) {
     return res.status(400).json({
       error: "Invalid players",
-      details:
-        "Please select 4 different saved players before saving the game.",
+      details: "Lottery order must contain 4 different saved players.",
     });
   }
 
   if (
     results.length !== 4 ||
     new Set(resultPlayers).size !== 4 ||
-    resultPlayers.some((player) => !lotteryOrder.includes(player))
+    resultPlayers.some((player) => !data.players.includes(player)) ||
+    (lotteryOrder.length === 4 &&
+      resultPlayers.some((player) => !lotteryOrder.includes(player)))
   ) {
     return res.status(400).json({
       error: "Invalid result players",
-      details: "Each selected player needs exactly one result.",
+      details: "Each selected saved player needs exactly one result.",
     });
   }
 
@@ -113,20 +116,17 @@ app.post("/api/game", async (req, res) => {
     });
   }
 
-  const game = {
-    id: Date.now(),
-    date: new Date().toISOString(),
+  const saved = addGameResult(data, {
     lotteryOrder,
-    results: results.map((result) => ({
-      player: result.player,
-      position: Number(result.position),
-    })),
-  };
+    results,
+  });
 
-  data.games.push(game);
-  await saveData(data);
+  await saveData(saved.data);
 
-  res.json(data);
+  res.json({
+    ...getDerivedData(saved.data),
+    completedSeason: saved.completedSeason,
+  });
 });
 
 app.delete("/api/reset", async (req, res) => {
@@ -134,7 +134,7 @@ app.delete("/api/reset", async (req, res) => {
 
   const data = defaultData();
   await saveData(data);
-  res.json(data);
+  res.json(getDerivedData(data));
 });
 
 app.listen(PORT, () => {

@@ -1,9 +1,17 @@
 const API = "/api";
 const WRITE_PIN_KEY = "luduWritePin";
+const POINTS_BY_POSITION = { 1: 4, 2: 3, 3: 2, 4: 1 };
 
 let players = [];
 let games = [];
+let currentSeason = { number: 1, matchLimit: 10, matches: [] };
+let seasonHistory = [];
+let leaderboard = [];
+let ranking = [];
+let allTimeRanking = [];
 let lotteryOrder = [];
+let historyPage = 1;
+let historyPageLimit = 5;
 
 function getWritePin() {
   return sessionStorage.getItem(WRITE_PIN_KEY) || "";
@@ -58,7 +66,6 @@ async function unlockWrites() {
   if (!pin) return false;
 
   try {
-    // Use POST /api/player with an empty name as a safe way to validate the PIN:
     const res = await fetch(`${API}/player`, {
       method: "POST",
       headers: {
@@ -76,7 +83,6 @@ async function unlockWrites() {
       return false;
     }
 
-    // Expected failure when PIN is valid but name is missing.
     if (res.status === 400 && errorMessage === "Player name is required") {
       sessionStorage.setItem(WRITE_PIN_KEY, pin);
       updateWriteControls();
@@ -90,7 +96,7 @@ async function unlockWrites() {
 
     await showAlert("error", "Could not verify PIN", error.details || "");
     return false;
-  } catch (err) {
+  } catch {
     await showAlert("error", "Network error", "Could not verify PIN.");
     return false;
   }
@@ -141,14 +147,8 @@ function updateWriteControls() {
       : "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600 sm:w-auto";
   }
 
-  if (unlockButton) {
-    unlockButton.textContent = unlocked ? "" : "Login";
-    unlockButton.classList.toggle("hidden", unlocked);
-  }
-
-  if (lockButton) {
-    lockButton.classList.toggle("hidden", !unlocked);
-  }
+  unlockButton?.classList.toggle("hidden", unlocked);
+  lockButton?.classList.toggle("hidden", !unlocked);
 
   document.querySelectorAll(".write-panel").forEach((panel) => {
     if (panel.id === "turnOrderSection" && lotteryOrder.length === 0) {
@@ -160,15 +160,134 @@ function updateWriteControls() {
   });
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatNumber(value) {
+  return Number(value || 0).toFixed(2);
+}
+
+function getOrdinal(position) {
+  if (position === 1) return "1st";
+  if (position === 2) return "2nd";
+  if (position === 3) return "3rd";
+  return "4th";
+}
+
+async function handleWriteError(res, fallback) {
+  const error = await res.json().catch(() => ({}));
+
+  if (res.status === 401) {
+    lockWrites();
+  }
+
+  await showAlert("error", error.error || fallback, error.details || fallback);
+}
+
+function calculateStats(sourcePlayers, matches) {
+  const board = {};
+
+  sourcePlayers.forEach((player) => {
+    board[player] = {
+      player,
+      matchesPlayed: 0,
+      wins: 0,
+      totalPoints: 0,
+      averagePoint: 0,
+      rankingScore: 0,
+      lostCount: 0,
+    };
+  });
+
+  matches.forEach((game) => {
+    (game.results || []).forEach((result) => {
+      if (!board[result.player]) {
+        board[result.player] = {
+          player: result.player,
+          matchesPlayed: 0,
+          wins: 0,
+          totalPoints: 0,
+          averagePoint: 0,
+          rankingScore: 0,
+          lostCount: 0,
+        };
+      }
+
+      const position = Number(result.position);
+      board[result.player].matchesPlayed += 1;
+      board[result.player].totalPoints += POINTS_BY_POSITION[position] || 0;
+      if (position === 1) board[result.player].wins += 1;
+      if (position === 4) board[result.player].lostCount += 1;
+    });
+  });
+
+  return Object.values(board).map((row) => {
+    const averagePoint =
+      row.matchesPlayed > 0 ? row.totalPoints / row.matchesPlayed : 0;
+    const lossFactor =
+      row.matchesPlayed > 0 ? 1 - row.lostCount / row.matchesPlayed : 0;
+    const matchFactor = Math.min(1, row.matchesPlayed / 10);
+
+    return {
+      ...row,
+      averagePoint,
+      rankingScore: averagePoint * lossFactor * matchFactor,
+    };
+  });
+}
+
+function calculateLeaderboard(sourcePlayers, matches) {
+  return calculateStats(sourcePlayers, matches).sort((a, b) => {
+    if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+    if (b.wins !== a.wins) return b.wins - a.wins;
+    if (a.lostCount !== b.lostCount) return a.lostCount - b.lostCount;
+    return a.player.localeCompare(b.player);
+  });
+}
+
+function calculateRanking(sourcePlayers, matches) {
+  return calculateStats(sourcePlayers, matches).sort((a, b) => {
+    if (b.rankingScore !== a.rankingScore) {
+      return b.rankingScore - a.rankingScore;
+    }
+    if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+    if (a.lostCount !== b.lostCount) return a.lostCount - b.lostCount;
+    return a.player.localeCompare(b.player);
+  });
+}
+
 function setData(data) {
   players = data.players || [];
-  games = data.games || [];
+  currentSeason = data.currentSeason || {
+    number: 1,
+    matchLimit: 10,
+    matches: data.games || [],
+  };
+  games = data.games || currentSeason.matches || [];
+  seasonHistory = data.seasonHistory || [];
+  leaderboard =
+    data.leaderboard || calculateLeaderboard(players, currentSeason.matches || []);
+  ranking = data.ranking || calculateRanking(players, currentSeason.matches || []);
+  allTimeRanking = data.allTimeRanking || calculateRanking(players, games);
+
+  const totalPages = Math.max(1, Math.ceil(games.length / historyPageLimit));
+  historyPage = Math.min(historyPage, totalPages);
 
   renderPlayers();
   renderSelects();
   renderResultInputs();
+  renderSeasonProgress();
   renderLeaderboard();
+  renderRanking();
+  renderAllTimeRanking();
   renderHistory();
+  renderSeasonHistory();
   updateWriteControls();
 }
 
@@ -194,25 +313,6 @@ function getSelectedPlayers() {
 function hasDuplicateValues(values) {
   const filled = values.filter(Boolean);
   return new Set(filled).size !== filled.length;
-}
-
-function escapeHtml(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-async function handleWriteError(res, fallback) {
-  const error = await res.json().catch(() => ({}));
-
-  if (res.status === 401) {
-    lockWrites();
-  }
-
-  await showAlert("error", error.error || fallback, error.details || fallback);
 }
 
 async function addPlayer() {
@@ -353,7 +453,7 @@ function renderResultInputs() {
               const value = String(position);
               const disabled =
                 selectedPositions.includes(value) && value !== currentPosition;
-              const label = `${position}${position === 1 ? "st" : position === 2 ? "nd" : position === 3 ? "rd" : "th"} (${position})`;
+              const label = `${getOrdinal(position)} (${position})`;
               return `<option value="${value}" ${disabled ? "disabled" : ""} ${value === currentPosition ? "selected" : ""}>${label}</option>`;
             })
             .join("")}
@@ -434,15 +534,6 @@ async function saveGame() {
     return;
   }
 
-  if (lotteryOrder.length !== 4) {
-    await showAlert(
-      "warning",
-      "Run lottery first",
-      "Please run lottery before saving the game.",
-    );
-    return;
-  }
-
   const positionSelects = document.querySelectorAll(".position-select");
   const results = [...positionSelects].map((select) => ({
     player: select.dataset.player,
@@ -467,7 +558,7 @@ async function saveGame() {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify({
-      lotteryOrder,
+      lotteryOrder: lotteryOrder.length === 4 ? lotteryOrder : [],
       results,
     }),
   });
@@ -484,81 +575,109 @@ async function saveGame() {
     select.value = "";
   });
 
-  setData(await res.json());
+  const data = await res.json();
+  setData(data);
+
+  if (data.completedSeason) {
+    await showAlert(
+      "success",
+      "Season completed",
+      `Season ${data.completedSeason.seasonNumber} completed and saved to Season History.`,
+    );
+    return;
+  }
+
   await showAlert("success", "Saved", "Game result saved successfully.");
 }
 
-function getLeaderboard() {
-  const board = {};
+function renderSeasonProgress() {
+  const progress = document.getElementById("seasonProgress");
+  if (!progress) return;
 
-  players.forEach((player) => {
-    board[player] = {
-      player,
-      games: 0,
-      wins: 0,
-      points: 0,
-    };
-  });
+  const matchCount = currentSeason.matches?.length || 0;
+  const limit = currentSeason.matchLimit || 10;
+  progress.textContent = `Season ${currentSeason.number} - Match ${matchCount} of ${limit}`;
+}
 
-  games.forEach((game) => {
-    game.results.forEach((result) => {
-      if (!board[result.player]) {
-        board[result.player] = {
-          player: result.player,
-          games: 0,
-          wins: 0,
-          points: 0,
-        };
-      }
+function getRowClass(index) {
+  if (index === 0) {
+    return "border-t border-green-700 bg-green-800 text-white";
+  }
 
-      board[result.player].games += 1;
+  if (index === 1) {
+    return "border-t border-green-300 bg-green-100 text-green-950";
+  }
 
-      if (result.position === 1) {
-        board[result.player].wins += 1;
-      }
-
-      const points = {
-        1: 4,
-        2: 3,
-        3: 2,
-        4: 1,
-      };
-
-      board[result.player].points += points[result.position] || 0;
-    });
-  });
-
-  return Object.values(board).sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points;
-    if (b.wins !== a.wins) return b.wins - a.wins;
-    return a.player.localeCompare(b.player);
-  });
+  return "border-t border-slate-200";
 }
 
 function renderLeaderboard() {
-  const leaderboard = getLeaderboard();
   const tbody = document.getElementById("leaderboardBody");
 
   tbody.innerHTML = leaderboard
-    .map((row, index) => {
-      const medals = ["1", "2", "3"];
-      const rank = medals[index] || index + 1;
-
-      return `
-      <tr class="border-t border-slate-200">
-        <td class="p-2 font-bold sm:p-3">${rank}</td>
+    .map((row, index) => `
+      <tr class="${getRowClass(index)}">
+        <td class="p-2 font-bold sm:p-3">${index + 1}</td>
         <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
-        <td class="p-2 sm:p-3">${row.games}</td>
-        <td class="p-2 sm:p-3">${row.wins}</td>
-        <td class="p-2 font-bold text-green-600 sm:p-3">${row.points}</td>
+        <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
+        <td class="p-2 sm:p-3">${row.wins || 0}</td>
+        <td class="p-2 font-bold sm:p-3">${row.totalPoints || 0}</td>
+        <td class="p-2 sm:p-3">${formatNumber(row.averagePoint)}</td>
+        <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
       </tr>
-    `;
-    })
+    `)
+    .join("");
+}
+
+function renderRanking() {
+  const tbody = document.getElementById("rankingBody");
+
+  if (!tbody) return;
+
+  tbody.innerHTML = ranking
+    .map((row, index) => `
+      <tr class="border-t border-slate-200">
+        <td class="p-2 font-bold sm:p-3">${index + 1}</td>
+        <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
+        <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
+        <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
+        <td class="p-2 sm:p-3">${formatNumber(row.averagePoint)}</td>
+        <td class="p-2 font-bold text-indigo-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
+        <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
+      </tr>
+    `)
+    .join("");
+}
+
+function renderAllTimeRanking() {
+  const tbody = document.getElementById("allTimeRankingBody");
+
+  if (!tbody) return;
+
+  tbody.innerHTML = allTimeRanking
+    .map((row, index) => `
+      <tr class="border-t border-slate-200">
+        <td class="p-2 font-bold sm:p-3">${index + 1}</td>
+        <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
+        <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
+        <td class="p-2 sm:p-3">${row.wins || 0}</td>
+        <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
+        <td class="p-2 sm:p-3">${formatNumber(row.averagePoint)}</td>
+        <td class="p-2 font-bold text-teal-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
+        <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
+      </tr>
+    `)
     .join("");
 }
 
 function renderHistory() {
   const history = document.getElementById("gameHistory");
+  const controls = document.getElementById("historyPagination");
+  const limitSelect = document.getElementById("historyPageLimit");
+
+  if (limitSelect && String(historyPageLimit) !== limitSelect.value) {
+    limitSelect.value = String(historyPageLimit);
+  }
 
   if (games.length === 0) {
     history.innerHTML = `
@@ -566,24 +685,32 @@ function renderHistory() {
         No game history yet.
       </div>
     `;
+    if (controls) controls.innerHTML = "";
     return;
   }
 
-  history.innerHTML = [...games]
-    .reverse()
+  const sortedGames = [...games].sort(
+    (a, b) => new Date(b.date) - new Date(a.date),
+  );
+  const totalPages = Math.max(1, Math.ceil(sortedGames.length / historyPageLimit));
+  historyPage = Math.min(Math.max(historyPage, 1), totalPages);
+  const start = (historyPage - 1) * historyPageLimit;
+  const visibleGames = sortedGames.slice(start, start + historyPageLimit);
+
+  history.innerHTML = visibleGames
     .map((game) => {
-      const sortedResults = [...game.results].sort(
+      const sortedResults = [...(game.results || [])].sort(
         (a, b) => a.position - b.position,
       );
 
       return `
       <div class="rounded-xl border border-purple-200 bg-purple-50 p-4">
         <p class="mb-3 font-semibold text-slate-700">
-          ${new Date(game.date).toLocaleString()}
+          Season ${game.seasonNumber || 1}, Match ${game.matchNumber || 1} - ${new Date(game.date).toLocaleString()}
         </p>
 
         <p class="text-sm font-bold">Turn Order:</p>
-        <p class="mb-3 break-words text-sm">${game.lotteryOrder.map(escapeHtml).join(" -> ")}</p>
+        <p class="mb-3 break-words text-sm">${(game.lotteryOrder || []).length ? game.lotteryOrder.map(escapeHtml).join(" -> ") : "Lottery not used"}</p>
 
         <p class="text-sm font-bold">Result:</p>
         <p class="break-words text-sm">
@@ -591,6 +718,90 @@ function renderHistory() {
         </p>
       </div>
     `;
+    })
+    .join("");
+
+  if (!controls) return;
+
+  const pageButtons = Array.from({ length: totalPages }, (_, index) => {
+    const page = index + 1;
+    const activeClass =
+      page === historyPage
+        ? "bg-purple-600 text-white"
+        : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50";
+    return `<button type="button" onclick="setHistoryPage(${page})" class="h-10 min-w-10 rounded-lg px-3 text-sm font-semibold ${activeClass}">${page}</button>`;
+  }).join("");
+
+  controls.innerHTML = `
+    <button type="button" onclick="setHistoryPage(${historyPage - 1})" ${historyPage === 1 ? "disabled" : ""} class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">Previous</button>
+    <div class="flex flex-wrap justify-center gap-2">${pageButtons}</div>
+    <button type="button" onclick="setHistoryPage(${historyPage + 1})" ${historyPage === totalPages ? "disabled" : ""} class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">Next</button>
+  `;
+}
+
+function setHistoryPage(page) {
+  const totalPages = Math.max(1, Math.ceil(games.length / historyPageLimit));
+  historyPage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+  renderHistory();
+}
+
+function setHistoryPageLimit(value) {
+  historyPageLimit = Number(value) || 5;
+  historyPage = 1;
+  renderHistory();
+}
+
+function renderSeasonHistory() {
+  const container = document.getElementById("seasonHistory");
+  if (!container) return;
+
+  if (seasonHistory.length === 0) {
+    container.innerHTML = `
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-slate-500 sm:p-5">
+        No completed seasons yet.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = [...seasonHistory]
+    .sort((a, b) => b.seasonNumber - a.seasonNumber)
+    .map((season) => {
+      const rows = (season.leaderboard || [])
+        .map((row, index) => `
+          <tr class="border-t border-slate-200">
+            <td class="p-2 font-bold">${index + 1}</td>
+            <td class="break-words p-2 font-semibold">${escapeHtml(row.player)}</td>
+            <td class="p-2">${row.matchesPlayed || row.matches || 0}</td>
+            <td class="p-2">${row.totalPoints || row.points || 0}</td>
+            <td class="p-2">${formatNumber(row.averagePoint)}</td>
+            <td class="p-2">${row.lostCount || 0}</td>
+          </tr>
+        `)
+        .join("");
+
+      return `
+        <details class="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+          <summary class="cursor-pointer font-bold text-emerald-800">
+            Season ${season.seasonNumber} - Completed ${new Date(season.completedAt).toLocaleString()}
+          </summary>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full rounded-xl border border-slate-200 bg-white text-left text-sm">
+              <thead class="bg-emerald-100 text-emerald-800">
+                <tr>
+                  <th class="p-2">Rank</th>
+                  <th class="p-2">Player</th>
+                  <th class="p-2">Total Matches</th>
+                  <th class="p-2">Total Points</th>
+                  <th class="p-2">Average Point</th>
+                  <th class="p-2">Lost Count</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </details>
+      `;
     })
     .join("");
 }

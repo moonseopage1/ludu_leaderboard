@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "seed:blob": "node scripts/seed-vercel-blob.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.3.3",

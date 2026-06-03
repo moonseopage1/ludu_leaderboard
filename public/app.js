@@ -272,8 +272,10 @@ function setData(data) {
   games = data.games || currentSeason.matches || [];
   seasonHistory = data.seasonHistory || [];
   leaderboard =
-    data.leaderboard || calculateLeaderboard(players, currentSeason.matches || []);
-  ranking = data.ranking || calculateRanking(players, currentSeason.matches || []);
+    data.leaderboard ||
+    calculateLeaderboard(players, currentSeason.matches || []);
+  ranking =
+    data.ranking || calculateRanking(players, currentSeason.matches || []);
   allTimeRanking = data.allTimeRanking || calculateRanking(players, games);
 
   const totalPages = Math.max(1, Math.ceil(games.length / historyPageLimit));
@@ -615,17 +617,20 @@ function renderLeaderboard() {
   const tbody = document.getElementById("leaderboardBody");
 
   tbody.innerHTML = leaderboard
-    .map((row, index) => `
+    .map(
+      (row, index) => `
       <tr class="${getRowClass(index)}">
         <td class="p-2 font-bold sm:p-3">${index + 1}</td>
         <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
         <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
-        <td class="p-2 sm:p-3">${row.wins || 0}</td>
+          <td class="p-2 sm:p-3">${row.wins || 0}</td>
+        <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
         <td class="p-2 font-bold sm:p-3">${row.totalPoints || 0}</td>
         <td class="p-2 sm:p-3">${formatNumber(row.averagePoint)}</td>
-        <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
+      
       </tr>
-    `)
+    `,
+    )
     .join("");
 }
 
@@ -635,17 +640,17 @@ function renderRanking() {
   if (!tbody) return;
 
   tbody.innerHTML = ranking
-    .map((row, index) => `
+    .map(
+      (row, index) => `
       <tr class="border-t border-slate-200">
         <td class="p-2 font-bold sm:p-3">${index + 1}</td>
         <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
         <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
-        <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
-        <td class="p-2 sm:p-3">${formatNumber(row.averagePoint)}</td>
         <td class="p-2 font-bold text-indigo-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
-        <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
+        <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
       </tr>
-    `)
+    `,
+    )
     .join("");
 }
 
@@ -655,18 +660,20 @@ function renderAllTimeRanking() {
   if (!tbody) return;
 
   tbody.innerHTML = allTimeRanking
-    .map((row, index) => `
+    .map(
+      (row, index) => `
       <tr class="border-t border-slate-200">
         <td class="p-2 font-bold sm:p-3">${index + 1}</td>
         <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
         <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
-        <td class="p-2 sm:p-3">${row.wins || 0}</td>
-        <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
-        <td class="p-2 sm:p-3">${formatNumber(row.averagePoint)}</td>
-        <td class="p-2 font-bold text-teal-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
+                <td class="p-2 sm:p-3">${row.wins || 0}</td>
         <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
+        <td class="p-2 font-bold text-teal-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
+        <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
+        
       </tr>
-    `)
+    `,
+    )
     .join("");
 }
 
@@ -692,7 +699,10 @@ function renderHistory() {
   const sortedGames = [...games].sort(
     (a, b) => new Date(b.date) - new Date(a.date),
   );
-  const totalPages = Math.max(1, Math.ceil(sortedGames.length / historyPageLimit));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedGames.length / historyPageLimit),
+  );
   historyPage = Math.min(Math.max(historyPage, 1), totalPages);
   const start = (historyPage - 1) * historyPageLimit;
   const visibleGames = sortedGames.slice(start, start + historyPageLimit);
@@ -768,7 +778,8 @@ function renderSeasonHistory() {
     .sort((a, b) => b.seasonNumber - a.seasonNumber)
     .map((season) => {
       const rows = (season.leaderboard || [])
-        .map((row, index) => `
+        .map(
+          (row, index) => `
           <tr class="border-t border-slate-200">
             <td class="p-2 font-bold">${index + 1}</td>
             <td class="break-words p-2 font-semibold">${escapeHtml(row.player)}</td>
@@ -777,7 +788,8 @@ function renderSeasonHistory() {
             <td class="p-2">${formatNumber(row.averagePoint)}</td>
             <td class="p-2">${row.lostCount || 0}</td>
           </tr>
-        `)
+        `,
+        )
         .join("");
 
       return `

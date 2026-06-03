@@ -34,8 +34,8 @@
       min-width: 0;
     }
 
-    .grid > *,
-    .flex > *,
+    .grid>*,
+    .flex>*,
     td {
       min-width: 0;
       overflow-wrap: anywhere;
@@ -62,7 +62,8 @@
         <div class="min-w-0">
           <h1 class="text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">Ludu Leaderboard</h1>
           <p class="mt-1 text-slate-500">Track games, turn order, seasons, leaderboard and rankings</p>
-          <p id="seasonProgress" class="mt-3 inline-flex rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700">
+          <p id="seasonProgress"
+            class="mt-3 inline-flex rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700">
             Season 1 - Match 0 of 10
           </p>
         </div>
@@ -164,9 +165,10 @@
               <th class="p-2 sm:p-3">Player</th>
               <th class="p-2 sm:p-3">Total Matches Played</th>
               <th class="p-2 sm:p-3">Wins</th>
+              <th class="p-2 sm:p-3">Lost</th>
               <th class="p-2 sm:p-3">Total Points</th>
               <th class="p-2 sm:p-3">Average Point</th>
-              <th class="p-2 sm:p-3">Lost Count</th>
+
             </tr>
           </thead>
           <tbody id="leaderboardBody"></tbody>
@@ -188,10 +190,8 @@
               <th class="w-16 p-2 sm:p-3">Rank</th>
               <th class="p-2 sm:p-3">Player name</th>
               <th class="p-2 sm:p-3">Matches played</th>
-              <th class="p-2 sm:p-3">Total points</th>
-              <th class="p-2 sm:p-3">Average point</th>
-              <th class="p-2 sm:p-3">Ranking score</th>
-              <th class="p-2 sm:p-3">Lost count</th>
+              <th class="p-2 sm:p-3">Rating</th>
+              <th class="p-2 sm:p-3">Points</th>
             </tr>
           </thead>
           <tbody id="rankingBody"></tbody>
@@ -210,10 +210,10 @@
               <th class="p-2 sm:p-3">Player name</th>
               <th class="p-2 sm:p-3">Matches played</th>
               <th class="p-2 sm:p-3">Wins</th>
-              <th class="p-2 sm:p-3">Total points</th>
-              <th class="p-2 sm:p-3">Average point</th>
-              <th class="p-2 sm:p-3">Ranking score</th>
-              <th class="p-2 sm:p-3">Lost count</th>
+              <th class="p-2 sm:p-3">Lost</th>
+              <th class="p-2 sm:p-3">Rating</th>
+              <th class="p-2 sm:p-3">Points</th>
+
             </tr>
           </thead>
           <tbody id="allTimeRankingBody"></tbody>

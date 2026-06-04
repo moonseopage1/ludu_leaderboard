@@ -901,6 +901,125 @@ function formatPenaltySummary(penalties = []) {
     .join(" | ");
 }
 
+function getPenaltyHistory() {
+  return games
+    .flatMap((game) =>
+      (game.penalties || []).map((penalty) => {
+        const type = PENALTY_TYPES[penalty.type];
+        return {
+          date: game.date,
+          seasonNumber: game.seasonNumber || 1,
+          matchNumber: game.matchNumber || 1,
+          player: penalty.player,
+          violation: type?.historyLabel || penalty.type || "Penalty",
+          points: Number(penalty.points) || type?.points || 1,
+        };
+      }),
+    )
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+function renderPenaltyRulesHtml() {
+  const rows = Object.values(PENALTY_TYPES)
+    .map(
+      (type) => `
+        <tr class="border-t border-slate-200">
+          <td class="p-2 text-left">${escapeHtml(type.historyLabel)}</td>
+          <td class="p-2 text-right font-bold text-red-600">-${type.points}</td>
+        </tr>
+      `,
+    )
+    .join("");
+
+  return `
+    <div class="text-left">
+      <h3 class="mb-3 text-base font-bold text-slate-900">Penalty Rules</h3>
+      <div class="overflow-x-auto rounded-xl border border-slate-200">
+        <table class="w-full text-sm">
+          <thead class="bg-amber-50 text-amber-800">
+            <tr>
+              <th class="p-2 text-left">Violation</th>
+              <th class="p-2 text-right">Penalty</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderPenaltyHistoryHtml() {
+  const history = getPenaltyHistory();
+
+  if (history.length === 0) {
+    return `
+      <div class="mt-5 text-left">
+        <h3 class="mb-3 text-base font-bold text-slate-900">Penalty History</h3>
+        <div class="rounded-xl border border-green-200 bg-green-50 p-4 text-center text-sm font-semibold text-green-700">
+          No penalties recorded.
+        </div>
+      </div>
+    `;
+  }
+
+  const rows = history
+    .map(
+      (entry) => `
+        <tr class="border-t border-slate-200 align-top">
+          <td class="p-2 text-left">${new Date(entry.date).toLocaleString()}</td>
+          <td class="p-2 text-left">S${entry.seasonNumber}, M${entry.matchNumber}</td>
+          <td class="p-2 text-left font-semibold">${escapeHtml(entry.player)}</td>
+          <td class="p-2 text-left">${escapeHtml(entry.violation)}</td>
+          <td class="p-2 text-right font-bold text-red-600">-${entry.points}</td>
+        </tr>
+      `,
+    )
+    .join("");
+
+  return `
+    <div class="mt-5 text-left">
+      <h3 class="mb-3 text-base font-bold text-slate-900">Penalty History</h3>
+      <div class="max-h-80 overflow-auto rounded-xl border border-slate-200">
+        <table class="w-full text-sm">
+          <thead class="sticky top-0 bg-slate-50 text-slate-700">
+            <tr>
+              <th class="p-2 text-left">Date</th>
+              <th class="p-2 text-left">Match</th>
+              <th class="p-2 text-left">Player</th>
+              <th class="p-2 text-left">Violation</th>
+              <th class="p-2 text-right">Points</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function openPenaltyModal() {
+  const html = `
+    <div class="space-y-5">
+      ${renderPenaltyRulesHtml()}
+      ${renderPenaltyHistoryHtml()}
+    </div>
+  `;
+
+  if (!window.Swal) {
+    alert("Penalty rules and history are available after the page scripts load.");
+    return;
+  }
+
+  Swal.fire({
+    title: "Penalties",
+    html,
+    width: "900px",
+    confirmButtonText: "Close",
+    confirmButtonColor: "#0f172a",
+  });
+}
+
 function renderSeasonHistory() {
   const container = document.getElementById("seasonHistory");
   if (!container) return;

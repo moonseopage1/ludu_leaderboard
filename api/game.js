@@ -1,6 +1,6 @@
 import { readData, saveData, parseJsonBody, addCorsHeaders } from "./_data.js";
 import { requireWritePin } from "./_auth.js";
-import { addGameResult, getDerivedData } from "./_stats.js";
+import { PENALTY_TYPES, addGameResult, getDerivedData } from "./_stats.js";
 
 export default async function handler(req, res) {
   addCorsHeaders(res);
@@ -24,6 +24,7 @@ export default async function handler(req, res) {
     const data = await readData();
     const lotteryOrder = Array.isArray(body.lotteryOrder) ? body.lotteryOrder : [];
     const results = Array.isArray(body.results) ? body.results : [];
+    const penalties = Array.isArray(body.penalties) ? body.penalties : [];
     const resultPlayers = results.map((result) => result.player);
     const positions = results.map((result) => Number(result.position));
     const validPositions = [1, 2, 3, 4];
@@ -66,9 +67,37 @@ export default async function handler(req, res) {
       return;
     }
 
+    const normalizedPenalties = penalties
+      .map((penalty) => {
+        const type = String(penalty?.type || "").trim();
+        return {
+          player: String(penalty?.player || "").trim(),
+          type,
+          points: Number(penalty?.points) || Number(PENALTY_TYPES[type]?.points),
+        };
+      })
+      .filter((penalty) => penalty.player || penalty.type || penalty.points);
+
+    if (
+      normalizedPenalties.some(
+        (penalty) =>
+          !resultPlayers.includes(penalty.player) ||
+          !PENALTY_TYPES[penalty.type] ||
+          !Number.isFinite(penalty.points) ||
+          penalty.points <= 0,
+      )
+    ) {
+      res.status(400).json({
+        error: "Invalid penalties",
+        details: "Penalties must use a saved game player and a valid reason.",
+      });
+      return;
+    }
+
     const saved = addGameResult(data, {
       lotteryOrder,
       results,
+      penalties: normalizedPenalties,
     });
 
     await saveData(saved.data);

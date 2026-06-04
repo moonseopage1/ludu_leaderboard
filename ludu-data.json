@@ -201,6 +201,93 @@
             "points": 1
           }
         ]
+      },
+      {
+        "id": 1780570272151,
+        "date": "2026-06-04T10:51:12.151Z",
+        "seasonNumber": 2,
+        "matchNumber": 5,
+        "lotteryOrder": [],
+        "results": [
+          {
+            "player": "Babu Vai",
+            "position": 1
+          },
+          {
+            "player": "Saidul",
+            "position": 3
+          },
+          {
+            "player": "Moon",
+            "position": 4
+          },
+          {
+            "player": "Adif",
+            "position": 2
+          }
+        ],
+        "penalties": [
+          {
+            "player": "Babu Vai",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Babu Vai",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Babu Vai",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Saidul",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Saidul",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Moon",
+            "type": "moved_other_piece",
+            "points": 3
+          },
+          {
+            "player": "Moon",
+            "type": "moved_other_piece",
+            "points": 3
+          },
+          {
+            "player": "Moon",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          }
+        ]
       }
     ]
   },
@@ -702,6 +789,93 @@
         },
         {
           "player": "Moon",
+          "type": "influenced_other_move",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "id": 1780570272151,
+      "date": "2026-06-04T10:51:12.151Z",
+      "seasonNumber": 2,
+      "matchNumber": 5,
+      "lotteryOrder": [],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 1
+        },
+        {
+          "player": "Saidul",
+          "position": 3
+        },
+        {
+          "player": "Moon",
+          "position": 4
+        },
+        {
+          "player": "Adif",
+          "position": 2
+        }
+      ],
+      "penalties": [
+        {
+          "player": "Babu Vai",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Babu Vai",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Babu Vai",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Saidul",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Saidul",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Moon",
+          "type": "moved_other_piece",
+          "points": 3
+        },
+        {
+          "player": "Moon",
+          "type": "moved_other_piece",
+          "points": 3
+        },
+        {
+          "player": "Moon",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
           "type": "influenced_other_move",
           "points": 1
         }

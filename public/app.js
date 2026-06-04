@@ -892,12 +892,36 @@ function setHistoryPageLimit(value) {
 function formatPenaltySummary(penalties = []) {
   if (!penalties.length) return "No penalties";
 
-  return penalties
-    .map((penalty) => {
-      const type = PENALTY_TYPES[penalty.type];
-      const label = type?.historyLabel || penalty.type || "Penalty";
-      return `${escapeHtml(penalty.player)}: ${escapeHtml(label)} (-${Number(penalty.points) || type?.points || 1})`;
-    })
+  const grouped = new Map();
+
+  penalties.forEach((penalty) => {
+    const type = PENALTY_TYPES[penalty.type];
+    const player = String(penalty.player || "").trim();
+    const label = type?.historyLabel || penalty.type || "Penalty";
+    const key = `${player}::${penalty.type}`;
+    const points = Number(penalty.points) || type?.points || 1;
+
+    if (!player) return;
+
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        player,
+        label,
+        count: 0,
+        points: 0,
+      });
+    }
+
+    const entry = grouped.get(key);
+    entry.count += 1;
+    entry.points += points;
+  });
+
+  return [...grouped.values()]
+    .map(
+      (entry) =>
+        `${escapeHtml(entry.player)}: ${escapeHtml(entry.label)}(<strong>${entry.count}</strong>) (<span class="text-red-600">-${entry.points}</span>)`,
+    )
     .join(" | ");
 }
 
@@ -1007,7 +1031,9 @@ function openPenaltyModal() {
   `;
 
   if (!window.Swal) {
-    alert("Penalty rules and history are available after the page scripts load.");
+    alert(
+      "Penalty rules and history are available after the page scripts load.",
+    );
     return;
   }
 

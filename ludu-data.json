@@ -6,10 +6,210 @@
     "Moon",
     "Sonet"
   ],
+  "currentSeason": {
+    "number": 2,
+    "matchLimit": 10,
+    "matches": [
+      {
+        "id": 1780567752956,
+        "date": "2026-06-04T10:09:12.956Z",
+        "seasonNumber": 2,
+        "matchNumber": 1,
+        "lotteryOrder": [],
+        "results": [
+          {
+            "player": "Babu Vai",
+            "position": 4
+          },
+          {
+            "player": "Saidul",
+            "position": 1
+          },
+          {
+            "player": "Adif",
+            "position": 3
+          },
+          {
+            "player": "Moon",
+            "position": 2
+          }
+        ],
+        "penalties": [
+          {
+            "player": "Saidul",
+            "type": "moved_other_piece",
+            "points": 1
+          }
+        ]
+      },
+      {
+        "id": 1780568458133,
+        "date": "2026-06-04T10:20:58.133Z",
+        "seasonNumber": 2,
+        "matchNumber": 2,
+        "lotteryOrder": [],
+        "results": [
+          {
+            "player": "Babu Vai",
+            "position": 4
+          },
+          {
+            "player": "Saidul",
+            "position": 1
+          },
+          {
+            "player": "Adif",
+            "position": 3
+          },
+          {
+            "player": "Moon",
+            "position": 2
+          }
+        ],
+        "penalties": [
+          {
+            "player": "Babu Vai",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Saidul",
+            "type": "moved_other_piece",
+            "points": 3
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Moon",
+            "type": "influenced_other_move",
+            "points": 1
+          }
+        ]
+      },
+      {
+        "id": 1780568543852,
+        "date": "2026-06-04T10:22:23.852Z",
+        "seasonNumber": 2,
+        "matchNumber": 3,
+        "lotteryOrder": [],
+        "results": [
+          {
+            "player": "Babu Vai",
+            "position": 1
+          },
+          {
+            "player": "Saidul",
+            "position": 2
+          },
+          {
+            "player": "Adif",
+            "position": 3
+          },
+          {
+            "player": "Moon",
+            "position": 4
+          }
+        ],
+        "penalties": []
+      },
+      {
+        "id": 1780569032111,
+        "date": "2026-06-04T10:30:32.111Z",
+        "seasonNumber": 2,
+        "matchNumber": 4,
+        "lotteryOrder": [],
+        "results": [
+          {
+            "player": "Babu Vai",
+            "position": 4
+          },
+          {
+            "player": "Saidul",
+            "position": 3
+          },
+          {
+            "player": "Adif",
+            "position": 2
+          },
+          {
+            "player": "Moon",
+            "position": 1
+          }
+        ],
+        "penalties": [
+          {
+            "player": "Babu Vai",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Babu Vai",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Saidul",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Saidul",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Saidul",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Adif",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Moon",
+            "type": "influenced_other_move",
+            "points": 1
+          },
+          {
+            "player": "Moon",
+            "type": "influenced_other_move",
+            "points": 1
+          }
+        ]
+      }
+    ]
+  },
   "games": [
     {
       "id": 1779093623104,
       "date": "2026-05-18T08:40:23.104Z",
+      "seasonNumber": 1,
+      "matchNumber": 1,
       "lotteryOrder": [
         "Saidul",
         "Babu Vai",
@@ -33,11 +233,14 @@
           "player": "Adif",
           "position": 2
         }
-      ]
+      ],
+      "penalties": []
     },
     {
       "id": 1779179916909,
       "date": "2026-05-19T08:38:36.909Z",
+      "seasonNumber": 1,
+      "matchNumber": 2,
       "lotteryOrder": [
         "Adif",
         "Saidul",
@@ -61,11 +264,14 @@
           "player": "Moon",
           "position": 1
         }
-      ]
+      ],
+      "penalties": []
     },
     {
       "id": 1779191258096,
       "date": "2026-05-19T11:47:38.096Z",
+      "seasonNumber": 1,
+      "matchNumber": 3,
       "lotteryOrder": [
         "Adif",
         "Babu Vai",
@@ -89,11 +295,14 @@
           "player": "Moon",
           "position": 4
         }
-      ]
+      ],
+      "penalties": []
     },
     {
       "id": 1779195689108,
       "date": "2026-05-19T13:01:29.108Z",
+      "seasonNumber": 1,
+      "matchNumber": 4,
       "lotteryOrder": [
         "Moon",
         "Babu Vai",
@@ -117,11 +326,14 @@
           "player": "Moon",
           "position": 1
         }
-      ]
+      ],
+      "penalties": []
     },
     {
       "id": 1779267217930,
       "date": "2026-05-20T08:53:37.930Z",
+      "seasonNumber": 1,
+      "matchNumber": 5,
       "lotteryOrder": [
         "Saidul",
         "Babu Vai",
@@ -145,11 +357,14 @@
           "player": "Adif",
           "position": 1
         }
-      ]
+      ],
+      "penalties": []
     },
     {
       "id": 1779352152489,
       "date": "2026-05-21T08:29:12.489Z",
+      "seasonNumber": 1,
+      "matchNumber": 6,
       "lotteryOrder": [
         "Adif",
         "Babu Vai",
@@ -173,11 +388,14 @@
           "player": "Babu Vai",
           "position": 2
         }
-      ]
+      ],
+      "penalties": []
     },
     {
       "id": 1779522262366,
       "date": "2026-05-23T07:44:22.366Z",
+      "seasonNumber": 1,
+      "matchNumber": 7,
       "lotteryOrder": [
         "Saidul",
         "Adif",
@@ -201,11 +419,14 @@
           "player": "Adif",
           "position": 1
         }
-      ]
+      ],
+      "penalties": []
     },
     {
       "id": 1779689230251,
       "date": "2026-05-25T06:07:10.251Z",
+      "seasonNumber": 1,
+      "matchNumber": 8,
       "lotteryOrder": [
         "Moon",
         "Adif",
@@ -228,6 +449,617 @@
         {
           "player": "Saidul",
           "position": 4
+        }
+      ],
+      "penalties": []
+    },
+    {
+      "id": 1780475836453,
+      "date": "2026-06-03T08:37:16.453Z",
+      "seasonNumber": 1,
+      "matchNumber": 9,
+      "lotteryOrder": [
+        "Saidul",
+        "Babu Vai",
+        "Adif",
+        "Moon"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 4
+        },
+        {
+          "player": "Saidul",
+          "position": 1
+        },
+        {
+          "player": "Moon",
+          "position": 2
+        },
+        {
+          "player": "Adif",
+          "position": 3
+        }
+      ],
+      "penalties": []
+    },
+    {
+      "id": 1780567303526,
+      "date": "2026-06-04T10:01:43.526Z",
+      "seasonNumber": 1,
+      "matchNumber": 10,
+      "lotteryOrder": [
+        "Moon",
+        "Saidul",
+        "Adif",
+        "Babu Vai"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 3
+        },
+        {
+          "player": "Saidul",
+          "position": 1
+        },
+        {
+          "player": "Adif",
+          "position": 2
+        },
+        {
+          "player": "Moon",
+          "position": 4
+        }
+      ],
+      "penalties": []
+    },
+    {
+      "id": 1780567752956,
+      "date": "2026-06-04T10:09:12.956Z",
+      "seasonNumber": 2,
+      "matchNumber": 1,
+      "lotteryOrder": [],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 4
+        },
+        {
+          "player": "Saidul",
+          "position": 1
+        },
+        {
+          "player": "Adif",
+          "position": 3
+        },
+        {
+          "player": "Moon",
+          "position": 2
+        }
+      ],
+      "penalties": [
+        {
+          "player": "Saidul",
+          "type": "moved_other_piece",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "id": 1780568458133,
+      "date": "2026-06-04T10:20:58.133Z",
+      "seasonNumber": 2,
+      "matchNumber": 2,
+      "lotteryOrder": [],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 4
+        },
+        {
+          "player": "Saidul",
+          "position": 1
+        },
+        {
+          "player": "Adif",
+          "position": 3
+        },
+        {
+          "player": "Moon",
+          "position": 2
+        }
+      ],
+      "penalties": [
+        {
+          "player": "Babu Vai",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Saidul",
+          "type": "moved_other_piece",
+          "points": 3
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Moon",
+          "type": "influenced_other_move",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "id": 1780568543852,
+      "date": "2026-06-04T10:22:23.852Z",
+      "seasonNumber": 2,
+      "matchNumber": 3,
+      "lotteryOrder": [],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 1
+        },
+        {
+          "player": "Saidul",
+          "position": 2
+        },
+        {
+          "player": "Adif",
+          "position": 3
+        },
+        {
+          "player": "Moon",
+          "position": 4
+        }
+      ],
+      "penalties": []
+    },
+    {
+      "id": 1780569032111,
+      "date": "2026-06-04T10:30:32.111Z",
+      "seasonNumber": 2,
+      "matchNumber": 4,
+      "lotteryOrder": [],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 4
+        },
+        {
+          "player": "Saidul",
+          "position": 3
+        },
+        {
+          "player": "Adif",
+          "position": 2
+        },
+        {
+          "player": "Moon",
+          "position": 1
+        }
+      ],
+      "penalties": [
+        {
+          "player": "Babu Vai",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Babu Vai",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Saidul",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Saidul",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Saidul",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Adif",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Moon",
+          "type": "influenced_other_move",
+          "points": 1
+        },
+        {
+          "player": "Moon",
+          "type": "influenced_other_move",
+          "points": 1
+        }
+      ]
+    }
+  ],
+  "seasonHistory": [
+    {
+      "seasonNumber": 1,
+      "completedAt": "2026-06-04T10:01:43.526Z",
+      "matchCount": 10,
+      "leaderboard": [
+        {
+          "player": "Adif",
+          "matchesPlayed": 10,
+          "wins": 3,
+          "totalPoints": 28,
+          "averagePoint": 2.8,
+          "rankingScore": 2.2399999999999998,
+          "lostCount": 2
+        },
+        {
+          "player": "Saidul",
+          "matchesPlayed": 10,
+          "wins": 4,
+          "totalPoints": 25,
+          "averagePoint": 2.5,
+          "rankingScore": 1.5,
+          "lostCount": 4
+        },
+        {
+          "player": "Moon",
+          "matchesPlayed": 10,
+          "wins": 2,
+          "totalPoints": 25,
+          "averagePoint": 2.5,
+          "rankingScore": 2,
+          "lostCount": 2
+        },
+        {
+          "player": "Babu Vai",
+          "matchesPlayed": 10,
+          "wins": 1,
+          "totalPoints": 22,
+          "averagePoint": 2.2,
+          "rankingScore": 1.7600000000000002,
+          "lostCount": 2
+        },
+        {
+          "player": "Sonet",
+          "matchesPlayed": 0,
+          "wins": 0,
+          "totalPoints": 0,
+          "averagePoint": 0,
+          "rankingScore": 0,
+          "lostCount": 0
+        }
+      ],
+      "matches": [
+        {
+          "id": 1779093623104,
+          "date": "2026-05-18T08:40:23.104Z",
+          "seasonNumber": 1,
+          "matchNumber": 1,
+          "lotteryOrder": [
+            "Saidul",
+            "Babu Vai",
+            "Adif",
+            "Moon"
+          ],
+          "results": [
+            {
+              "player": "Babu Vai",
+              "position": 4
+            },
+            {
+              "player": "Moon",
+              "position": 3
+            },
+            {
+              "player": "Saidul",
+              "position": 1
+            },
+            {
+              "player": "Adif",
+              "position": 2
+            }
+          ]
+        },
+        {
+          "id": 1779179916909,
+          "date": "2026-05-19T08:38:36.909Z",
+          "seasonNumber": 1,
+          "matchNumber": 2,
+          "lotteryOrder": [
+            "Adif",
+            "Saidul",
+            "Babu Vai",
+            "Moon"
+          ],
+          "results": [
+            {
+              "player": "Babu Vai",
+              "position": 3
+            },
+            {
+              "player": "Saidul",
+              "position": 4
+            },
+            {
+              "player": "Adif",
+              "position": 2
+            },
+            {
+              "player": "Moon",
+              "position": 1
+            }
+          ]
+        },
+        {
+          "id": 1779191258096,
+          "date": "2026-05-19T11:47:38.096Z",
+          "seasonNumber": 1,
+          "matchNumber": 3,
+          "lotteryOrder": [
+            "Adif",
+            "Babu Vai",
+            "Saidul",
+            "Moon"
+          ],
+          "results": [
+            {
+              "player": "Babu Vai",
+              "position": 3
+            },
+            {
+              "player": "Saidul",
+              "position": 2
+            },
+            {
+              "player": "Adif",
+              "position": 1
+            },
+            {
+              "player": "Moon",
+              "position": 4
+            }
+          ]
+        },
+        {
+          "id": 1779195689108,
+          "date": "2026-05-19T13:01:29.108Z",
+          "seasonNumber": 1,
+          "matchNumber": 4,
+          "lotteryOrder": [
+            "Moon",
+            "Babu Vai",
+            "Adif",
+            "Saidul"
+          ],
+          "results": [
+            {
+              "player": "Babu Vai",
+              "position": 2
+            },
+            {
+              "player": "Saidul",
+              "position": 3
+            },
+            {
+              "player": "Adif",
+              "position": 4
+            },
+            {
+              "player": "Moon",
+              "position": 1
+            }
+          ]
+        },
+        {
+          "id": 1779267217930,
+          "date": "2026-05-20T08:53:37.930Z",
+          "seasonNumber": 1,
+          "matchNumber": 5,
+          "lotteryOrder": [
+            "Saidul",
+            "Babu Vai",
+            "Moon",
+            "Adif"
+          ],
+          "results": [
+            {
+              "player": "Babu Vai",
+              "position": 3
+            },
+            {
+              "player": "Saidul",
+              "position": 4
+            },
+            {
+              "player": "Moon",
+              "position": 2
+            },
+            {
+              "player": "Adif",
+              "position": 1
+            }
+          ]
+        },
+        {
+          "id": 1779352152489,
+          "date": "2026-05-21T08:29:12.489Z",
+          "seasonNumber": 1,
+          "matchNumber": 6,
+          "lotteryOrder": [
+            "Adif",
+            "Babu Vai",
+            "Moon",
+            "Saidul"
+          ],
+          "results": [
+            {
+              "player": "Moon",
+              "position": 3
+            },
+            {
+              "player": "Adif",
+              "position": 4
+            },
+            {
+              "player": "Saidul",
+              "position": 1
+            },
+            {
+              "player": "Babu Vai",
+              "position": 2
+            }
+          ]
+        },
+        {
+          "id": 1779522262366,
+          "date": "2026-05-23T07:44:22.366Z",
+          "seasonNumber": 1,
+          "matchNumber": 7,
+          "lotteryOrder": [
+            "Saidul",
+            "Adif",
+            "Babu Vai",
+            "Moon"
+          ],
+          "results": [
+            {
+              "player": "Moon",
+              "position": 2
+            },
+            {
+              "player": "Babu Vai",
+              "position": 3
+            },
+            {
+              "player": "Saidul",
+              "position": 4
+            },
+            {
+              "player": "Adif",
+              "position": 1
+            }
+          ]
+        },
+        {
+          "id": 1779689230251,
+          "date": "2026-05-25T06:07:10.251Z",
+          "seasonNumber": 1,
+          "matchNumber": 8,
+          "lotteryOrder": [
+            "Moon",
+            "Adif",
+            "Saidul",
+            "Babu Vai"
+          ],
+          "results": [
+            {
+              "player": "Babu Vai",
+              "position": 1
+            },
+            {
+              "player": "Adif",
+              "position": 2
+            },
+            {
+              "player": "Moon",
+              "position": 3
+            },
+            {
+              "player": "Saidul",
+              "position": 4
+            }
+          ]
+        },
+        {
+          "id": 1780475836453,
+          "date": "2026-06-03T08:37:16.453Z",
+          "seasonNumber": 1,
+          "matchNumber": 9,
+          "lotteryOrder": [
+            "Saidul",
+            "Babu Vai",
+            "Adif",
+            "Moon"
+          ],
+          "results": [
+            {
+              "player": "Babu Vai",
+              "position": 4
+            },
+            {
+              "player": "Saidul",
+              "position": 1
+            },
+            {
+              "player": "Moon",
+              "position": 2
+            },
+            {
+              "player": "Adif",
+              "position": 3
+            }
+          ]
+        },
+        {
+          "id": 1780567303526,
+          "date": "2026-06-04T10:01:43.526Z",
+          "seasonNumber": 1,
+          "matchNumber": 10,
+          "lotteryOrder": [
+            "Moon",
+            "Saidul",
+            "Adif",
+            "Babu Vai"
+          ],
+          "results": [
+            {
+              "player": "Babu Vai",
+              "position": 3
+            },
+            {
+              "player": "Saidul",
+              "position": 1
+            },
+            {
+              "player": "Adif",
+              "position": 2
+            },
+            {
+              "player": "Moon",
+              "position": 4
+            }
+          ]
         }
       ]
     }

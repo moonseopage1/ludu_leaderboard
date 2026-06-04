@@ -7,7 +7,33 @@ export const POINTS_BY_POSITION = {
   4: 1,
 };
 
+export const PENALTY_TYPES = {
+  moved_other_piece: {
+    label: "Intentionally moved another player's piece",
+    points: 3,
+  },
+  influenced_other_move: {
+    label: "Influenced another player's move",
+    points: 1,
+  },
+};
+
 const DEFAULT_PLAYERS = ["Babu Vai", "Saidul", "Adif", "Moon"];
+
+function emptyStats(player) {
+  return {
+    player,
+    matchesPlayed: 0,
+    wins: 0,
+    totalPoints: 0,
+    gamePoints: 0,
+    penaltyPoints: 0,
+    penaltyCount: 0,
+    averagePoint: 0,
+    rankingScore: 0,
+    lostCount: 0,
+  };
+}
 
 function cleanPlayers(players) {
   const source = Array.isArray(players) ? players : DEFAULT_PLAYERS;
@@ -27,15 +53,7 @@ export function calculateStats(players = [], matches = []) {
   const stats = {};
 
   cleanPlayers(players).forEach((player) => {
-    stats[player] = {
-      player,
-      matchesPlayed: 0,
-      wins: 0,
-      totalPoints: 0,
-      averagePoint: 0,
-      rankingScore: 0,
-      lostCount: 0,
-    };
+    stats[player] = emptyStats(player);
   });
 
   matches.forEach((match) => {
@@ -47,22 +65,30 @@ export function calculateStats(players = [], matches = []) {
       if (!player) return;
 
       if (!stats[player]) {
-        stats[player] = {
-          player,
-          matchesPlayed: 0,
-          wins: 0,
-          totalPoints: 0,
-          averagePoint: 0,
-          rankingScore: 0,
-          lostCount: 0,
-        };
+        stats[player] = emptyStats(player);
       }
 
+      const points = POINTS_BY_POSITION[position] || 0;
       stats[player].matchesPlayed += 1;
-      stats[player].totalPoints += POINTS_BY_POSITION[position] || 0;
+      stats[player].gamePoints += points;
+      stats[player].totalPoints += points;
 
       if (position === 1) stats[player].wins += 1;
       if (position === 4) stats[player].lostCount += 1;
+    });
+
+    (match.penalties || []).forEach((penalty) => {
+      const player = String(penalty?.player || "").trim();
+      if (!player) return;
+
+      if (!stats[player]) {
+        stats[player] = emptyStats(player);
+      }
+
+      const points = Math.max(0, Number(penalty?.points) || 0);
+      stats[player].penaltyPoints += points;
+      stats[player].penaltyCount += 1;
+      stats[player].totalPoints -= points;
     });
   });
 
@@ -115,6 +141,22 @@ export function defaultData() {
 }
 
 function normalizeGame(game, fallbackSeasonNumber = 1) {
+  const penalties = Array.isArray(game?.penalties)
+    ? game.penalties
+        .map((penalty) => {
+          const type = String(penalty?.type || "").trim();
+          return {
+            player: String(penalty?.player || "").trim(),
+            type,
+            points:
+              Number(penalty?.points) ||
+              Number(PENALTY_TYPES[type]?.points) ||
+              1,
+          };
+        })
+        .filter((penalty) => penalty.player && PENALTY_TYPES[penalty.type])
+    : [];
+
   return {
     id: game?.id || Date.now(),
     date: game?.date || new Date().toISOString(),
@@ -127,6 +169,7 @@ function normalizeGame(game, fallbackSeasonNumber = 1) {
           position: Number(result?.position),
         }))
       : [],
+    penalties,
   };
 }
 
@@ -259,6 +302,21 @@ export function addGameResult(data, payload) {
       player: result.player,
       position: Number(result.position),
     })),
+    penalties: Array.isArray(payload.penalties)
+      ? payload.penalties
+          .map((penalty) => {
+            const type = String(penalty?.type || "").trim();
+            return {
+              player: String(penalty?.player || "").trim(),
+              type,
+              points:
+                Number(penalty?.points) ||
+                Number(PENALTY_TYPES[type]?.points) ||
+                1,
+            };
+          })
+          .filter((penalty) => penalty.player && PENALTY_TYPES[penalty.type])
+      : [],
   };
 
   currentSeason.matches.push(game);

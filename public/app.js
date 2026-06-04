@@ -1,6 +1,18 @@
 const API = "/api";
 const WRITE_PIN_KEY = "luduWritePin";
 const POINTS_BY_POSITION = { 1: 4, 2: 3, 3: 2, 4: 1 };
+const PENALTY_TYPES = {
+  moved_other_piece: {
+    label: "Moved another piece",
+    historyLabel: "Intentionally moved another player's piece",
+    points: 3,
+  },
+  influenced_other_move: {
+    label: "Influenced move",
+    historyLabel: "Influenced another player's move",
+    points: 1,
+  },
+};
 
 let players = [];
 let games = [];
@@ -173,6 +185,13 @@ function formatNumber(value) {
   return Number(value || 0).toFixed(2);
 }
 
+function formatPenaltyCell(points) {
+  const value = Number(points) || 0;
+  const className = value > 0 ? "text-red-600" : "text-green-700";
+
+  return `<span class="${className}">${value > 0 ? `-${value}` : "0"}</span>`;
+}
+
 function getOrdinal(position) {
   if (position === 1) return "1st";
   if (position === 2) return "2nd";
@@ -199,6 +218,9 @@ function calculateStats(sourcePlayers, matches) {
       matchesPlayed: 0,
       wins: 0,
       totalPoints: 0,
+      gamePoints: 0,
+      penaltyPoints: 0,
+      penaltyCount: 0,
       averagePoint: 0,
       rankingScore: 0,
       lostCount: 0,
@@ -213,6 +235,9 @@ function calculateStats(sourcePlayers, matches) {
           matchesPlayed: 0,
           wins: 0,
           totalPoints: 0,
+          gamePoints: 0,
+          penaltyPoints: 0,
+          penaltyCount: 0,
           averagePoint: 0,
           rankingScore: 0,
           lostCount: 0,
@@ -220,10 +245,37 @@ function calculateStats(sourcePlayers, matches) {
       }
 
       const position = Number(result.position);
+      const points = POINTS_BY_POSITION[position] || 0;
       board[result.player].matchesPlayed += 1;
-      board[result.player].totalPoints += POINTS_BY_POSITION[position] || 0;
+      board[result.player].gamePoints += points;
+      board[result.player].totalPoints += points;
       if (position === 1) board[result.player].wins += 1;
       if (position === 4) board[result.player].lostCount += 1;
+    });
+
+    (game.penalties || []).forEach((penalty) => {
+      const player = String(penalty?.player || "").trim();
+      if (!player) return;
+
+      if (!board[player]) {
+        board[player] = {
+          player,
+          matchesPlayed: 0,
+          wins: 0,
+          totalPoints: 0,
+          gamePoints: 0,
+          penaltyPoints: 0,
+          penaltyCount: 0,
+          averagePoint: 0,
+          rankingScore: 0,
+          lostCount: 0,
+        };
+      }
+
+      const points = Math.max(0, Number(penalty?.points) || 0);
+      board[player].penaltyPoints += points;
+      board[player].penaltyCount += 1;
+      board[player].totalPoints -= points;
     });
   });
 
@@ -426,9 +478,58 @@ function getSelectedPositions() {
   );
 }
 
+function getPenaltyCountsByPlayer() {
+  const counts = {};
+
+  document.querySelectorAll(".penalty-count").forEach((input) => {
+    const player = input.dataset.player;
+    const type = input.dataset.type;
+    if (!player || !type) return;
+
+    counts[player] ||= {};
+    counts[player][type] = Number(input.value) || 0;
+  });
+
+  return counts;
+}
+
+function getPenaltyEntries() {
+  const penalties = [];
+
+  document.querySelectorAll(".penalty-count").forEach((input) => {
+    const count = Math.max(0, Number(input.value) || 0);
+    const player = input.dataset.player;
+    const type = input.dataset.type;
+    const penaltyType = PENALTY_TYPES[type];
+
+    if (!count || !player || !penaltyType) return;
+
+    for (let index = 0; index < count; index += 1) {
+      penalties.push({
+        player,
+        type,
+        points: penaltyType.points,
+      });
+    }
+  });
+
+  return penalties;
+}
+
+function updatePenaltyInputColor(input) {
+  const hasPenalty = (Number(input.value) || 0) > 0;
+  input.classList.toggle("border-red-300", hasPenalty);
+  input.classList.toggle("bg-red-50", hasPenalty);
+  input.classList.toggle("text-red-700", hasPenalty);
+  input.classList.toggle("border-green-300", !hasPenalty);
+  input.classList.toggle("bg-green-50", !hasPenalty);
+  input.classList.toggle("text-green-700", !hasPenalty);
+}
+
 function renderResultInputs() {
   const selected = getSelectedPlayers();
   const previousPositions = getSelectedPositions();
+  const previousPenaltyCounts = getPenaltyCountsByPlayer();
   const resultInputs = document.getElementById("resultInputs");
 
   if (selected.length === 0) {
@@ -460,6 +561,19 @@ function renderResultInputs() {
             })
             .join("")}
         </select>
+        <div class="mt-4 space-y-3">
+          ${Object.entries(PENALTY_TYPES)
+            .map(([type, config]) => {
+              const value = previousPenaltyCounts[player]?.[type] || 0;
+              return `
+                <label class="block text-xs font-semibold text-slate-600">
+                  <span class="mb-1 block">${escapeHtml(config.label)} (-${config.points})</span>
+                  <input type="number" min="0" step="1" value="${value}" data-player="${escapeHtml(player)}" data-type="${escapeHtml(type)}" class="write-control penalty-count w-full rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
+                </label>
+              `;
+            })
+            .join("")}
+        </div>
       </div>
     `;
     })
@@ -479,6 +593,11 @@ function renderResultInputs() {
       renderResultInputs();
       updateWriteControls();
     };
+  });
+
+  document.querySelectorAll(".penalty-count").forEach((input) => {
+    updatePenaltyInputColor(input);
+    input.oninput = () => updatePenaltyInputColor(input);
   });
 }
 
@@ -542,6 +661,7 @@ async function saveGame() {
     position: Number(select.value),
   }));
   const positions = results.map((result) => result.position);
+  const penalties = getPenaltyEntries();
 
   if (
     positions.length !== 4 ||
@@ -562,6 +682,7 @@ async function saveGame() {
     body: JSON.stringify({
       lotteryOrder: lotteryOrder.length === 4 ? lotteryOrder : [],
       results,
+      penalties,
     }),
   });
 
@@ -625,6 +746,8 @@ function renderLeaderboard() {
         <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
           <td class="p-2 sm:p-3">${row.wins || 0}</td>
         <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
+        <td class="p-2 sm:p-3">${row.gamePoints ?? row.totalPoints ?? 0}</td>
+        <td class="p-2 sm:p-3">${formatPenaltyCell(row.penaltyPoints)}</td>
         <td class="p-2 font-bold sm:p-3">${row.totalPoints || 0}</td>
         <td class="p-2 sm:p-3">${formatNumber(row.averagePoint)}</td>
       
@@ -647,6 +770,7 @@ function renderRanking() {
         <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
         <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
         <td class="p-2 font-bold text-indigo-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
+        <td class="p-2 sm:p-3">${formatPenaltyCell(row.penaltyPoints)}</td>
         <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
       </tr>
     `,
@@ -669,6 +793,7 @@ function renderAllTimeRanking() {
                 <td class="p-2 sm:p-3">${row.wins || 0}</td>
         <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
         <td class="p-2 font-bold text-teal-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
+        <td class="p-2 sm:p-3">${formatPenaltyCell(row.penaltyPoints)}</td>
         <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
         
       </tr>
@@ -726,6 +851,9 @@ function renderHistory() {
         <p class="break-words text-sm">
           ${sortedResults.map((result) => `${result.position}. ${escapeHtml(result.player)}`).join(" | ")}
         </p>
+
+        <p class="mt-3 text-sm font-bold">Penalties:</p>
+        <p class="break-words text-sm">${formatPenaltySummary(game.penalties || [])}</p>
       </div>
     `;
     })
@@ -761,6 +889,137 @@ function setHistoryPageLimit(value) {
   renderHistory();
 }
 
+function formatPenaltySummary(penalties = []) {
+  if (!penalties.length) return "No penalties";
+
+  return penalties
+    .map((penalty) => {
+      const type = PENALTY_TYPES[penalty.type];
+      const label = type?.historyLabel || penalty.type || "Penalty";
+      return `${escapeHtml(penalty.player)}: ${escapeHtml(label)} (-${Number(penalty.points) || type?.points || 1})`;
+    })
+    .join(" | ");
+}
+
+function getPenaltyHistory() {
+  return games
+    .flatMap((game) =>
+      (game.penalties || []).map((penalty) => {
+        const type = PENALTY_TYPES[penalty.type];
+        return {
+          date: game.date,
+          seasonNumber: game.seasonNumber || 1,
+          matchNumber: game.matchNumber || 1,
+          player: penalty.player,
+          violation: type?.historyLabel || penalty.type || "Penalty",
+          points: Number(penalty.points) || type?.points || 1,
+        };
+      }),
+    )
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+function renderPenaltyRulesHtml() {
+  const rows = Object.values(PENALTY_TYPES)
+    .map(
+      (type) => `
+        <tr class="border-t border-slate-200">
+          <td class="p-2 text-left">${escapeHtml(type.historyLabel)}</td>
+          <td class="p-2 text-right font-bold text-red-600">-${type.points}</td>
+        </tr>
+      `,
+    )
+    .join("");
+
+  return `
+    <div class="text-left">
+      <h3 class="mb-3 text-base font-bold text-slate-900">Penalty Rules</h3>
+      <div class="overflow-x-auto rounded-xl border border-slate-200">
+        <table class="w-full text-sm">
+          <thead class="bg-amber-50 text-amber-800">
+            <tr>
+              <th class="p-2 text-left">Violation</th>
+              <th class="p-2 text-right">Penalty</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderPenaltyHistoryHtml() {
+  const history = getPenaltyHistory();
+
+  if (history.length === 0) {
+    return `
+      <div class="mt-5 text-left">
+        <h3 class="mb-3 text-base font-bold text-slate-900">Penalty History</h3>
+        <div class="rounded-xl border border-green-200 bg-green-50 p-4 text-center text-sm font-semibold text-green-700">
+          No penalties recorded.
+        </div>
+      </div>
+    `;
+  }
+
+  const rows = history
+    .map(
+      (entry) => `
+        <tr class="border-t border-slate-200 align-top">
+          <td class="p-2 text-left">${new Date(entry.date).toLocaleString()}</td>
+          <td class="p-2 text-left">S${entry.seasonNumber}, M${entry.matchNumber}</td>
+          <td class="p-2 text-left font-semibold">${escapeHtml(entry.player)}</td>
+          <td class="p-2 text-left">${escapeHtml(entry.violation)}</td>
+          <td class="p-2 text-right font-bold text-red-600">-${entry.points}</td>
+        </tr>
+      `,
+    )
+    .join("");
+
+  return `
+    <div class="mt-5 text-left">
+      <h3 class="mb-3 text-base font-bold text-slate-900">Penalty History</h3>
+      <div class="max-h-80 overflow-auto rounded-xl border border-slate-200">
+        <table class="w-full text-sm">
+          <thead class="sticky top-0 bg-slate-50 text-slate-700">
+            <tr>
+              <th class="p-2 text-left">Date</th>
+              <th class="p-2 text-left">Match</th>
+              <th class="p-2 text-left">Player</th>
+              <th class="p-2 text-left">Violation</th>
+              <th class="p-2 text-right">Points</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function openPenaltyModal() {
+  const html = `
+    <div class="space-y-5">
+      ${renderPenaltyRulesHtml()}
+      ${renderPenaltyHistoryHtml()}
+    </div>
+  `;
+
+  if (!window.Swal) {
+    alert("Penalty rules and history are available after the page scripts load.");
+    return;
+  }
+
+  Swal.fire({
+    title: "Penalties",
+    html,
+    width: "900px",
+    confirmButtonText: "Close",
+    confirmButtonColor: "#0f172a",
+  });
+}
+
 function renderSeasonHistory() {
   const container = document.getElementById("seasonHistory");
   if (!container) return;
@@ -784,6 +1043,8 @@ function renderSeasonHistory() {
             <td class="p-2 font-bold">${index + 1}</td>
             <td class="break-words p-2 font-semibold">${escapeHtml(row.player)}</td>
             <td class="p-2">${row.matchesPlayed || row.matches || 0}</td>
+            <td class="p-2">${row.gamePoints ?? row.totalPoints ?? row.points ?? 0}</td>
+            <td class="p-2">${formatPenaltyCell(row.penaltyPoints)}</td>
             <td class="p-2">${row.totalPoints || row.points || 0}</td>
             <td class="p-2">${formatNumber(row.averagePoint)}</td>
             <td class="p-2">${row.lostCount || 0}</td>
@@ -804,6 +1065,8 @@ function renderSeasonHistory() {
                   <th class="p-2">Rank</th>
                   <th class="p-2">Player</th>
                   <th class="p-2">Total Matches</th>
+                  <th class="p-2">Game Points</th>
+                  <th class="p-2">Penalty</th>
                   <th class="p-2">Total Points</th>
                   <th class="p-2">Average Point</th>
                   <th class="p-2">Lost Count</th>

@@ -69,6 +69,11 @@
         </div>
 
         <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+          <button type="button" onclick="openPenaltyModal()"
+            class="w-full rounded-xl border border-amber-300 bg-amber-50 px-5 py-3 text-sm font-semibold text-amber-800 hover:bg-amber-100 sm:w-auto">
+            Penalties
+          </button>
+
           <div id="writeStatus"
             class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600 sm:w-auto">
             View-only mode
@@ -166,6 +171,8 @@
               <th class="p-2 sm:p-3">Total Matches Played</th>
               <th class="p-2 sm:p-3">Wins</th>
               <th class="p-2 sm:p-3">Lost</th>
+              <th class="p-2 sm:p-3">Game Points</th>
+              <th class="p-2 sm:p-3">Penalty</th>
               <th class="p-2 sm:p-3">Total Points</th>
               <th class="p-2 sm:p-3">Average Point</th>
 
@@ -176,7 +183,7 @@
       </div>
 
       <div class="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm font-semibold text-blue-700">
-        Scoring System: 1st = 4 pts, 2nd = 3 pts, 3rd = 2 pts, 4th = 1 pt
+        Scoring System: 1st = 4 pts, 2nd = 3 pts, 3rd = 2 pts, 4th = 1 pt. Use Penalties for demerit rules and history.
       </div>
     </section>
 
@@ -191,6 +198,7 @@
               <th class="p-2 sm:p-3">Player name</th>
               <th class="p-2 sm:p-3">Matches played</th>
               <th class="p-2 sm:p-3">Rating</th>
+              <th class="p-2 sm:p-3">Penalty</th>
               <th class="p-2 sm:p-3">Points</th>
             </tr>
           </thead>
@@ -212,6 +220,7 @@
               <th class="p-2 sm:p-3">Wins</th>
               <th class="p-2 sm:p-3">Lost</th>
               <th class="p-2 sm:p-3">Rating</th>
+              <th class="p-2 sm:p-3">Penalty</th>
               <th class="p-2 sm:p-3">Points</th>
 
             </tr>

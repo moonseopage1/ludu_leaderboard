@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { defaultData, readData, saveData } from "./api/_data.js";
 import { requireWritePin } from "./api/_auth.js";
-import { addGameResult, getDerivedData } from "./api/_stats.js";
+import { PENALTY_TYPES, addGameResult, getDerivedData } from "./api/_stats.js";
 
 const app = express();
 const PORT = 4000;
@@ -77,6 +77,7 @@ app.post("/api/game", async (req, res) => {
     ? req.body.lotteryOrder
     : [];
   const results = Array.isArray(req.body.results) ? req.body.results : [];
+  const penalties = Array.isArray(req.body.penalties) ? req.body.penalties : [];
   const resultPlayers = results.map((result) => result.player);
   const positions = results.map((result) => Number(result.position));
   const validPositions = [1, 2, 3, 4];
@@ -116,9 +117,36 @@ app.post("/api/game", async (req, res) => {
     });
   }
 
+  const normalizedPenalties = penalties
+    .map((penalty) => {
+      const type = String(penalty?.type || "").trim();
+      return {
+        player: String(penalty?.player || "").trim(),
+        type,
+        points: Number(penalty?.points) || Number(PENALTY_TYPES[type]?.points),
+      };
+    })
+    .filter((penalty) => penalty.player || penalty.type || penalty.points);
+
+  if (
+    normalizedPenalties.some(
+      (penalty) =>
+        !resultPlayers.includes(penalty.player) ||
+        !PENALTY_TYPES[penalty.type] ||
+        !Number.isFinite(penalty.points) ||
+        penalty.points <= 0,
+    )
+  ) {
+    return res.status(400).json({
+      error: "Invalid penalties",
+      details: "Penalties must use a saved game player and a valid reason.",
+    });
+  }
+
   const saved = addGameResult(data, {
     lotteryOrder,
     results,
+    penalties: normalizedPenalties,
   });
 
   await saveData(saved.data);

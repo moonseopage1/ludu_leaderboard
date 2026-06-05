@@ -9,7 +9,34 @@
   "currentSeason": {
     "number": 3,
     "matchLimit": 10,
-    "matches": []
+    "matches": [
+      {
+        "id": 1780654185227,
+        "date": "2026-06-05T10:09:45.227Z",
+        "seasonNumber": 3,
+        "matchNumber": 1,
+        "lotteryOrder": [],
+        "results": [
+          {
+            "player": "Babu Vai",
+            "position": 3
+          },
+          {
+            "player": "Saidul",
+            "position": 4
+          },
+          {
+            "player": "Adif",
+            "position": 2
+          },
+          {
+            "player": "Moon",
+            "position": 1
+          }
+        ],
+        "penalties": []
+      }
+    ]
   },
   "games": [
     {
@@ -593,6 +620,32 @@
         {
           "player": "Babu Vai",
           "position": 2
+        }
+      ],
+      "penalties": []
+    },
+    {
+      "id": 1780654185227,
+      "date": "2026-06-05T10:09:45.227Z",
+      "seasonNumber": 3,
+      "matchNumber": 1,
+      "lotteryOrder": [],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 3
+        },
+        {
+          "player": "Saidul",
+          "position": 4
+        },
+        {
+          "player": "Adif",
+          "position": 2
+        },
+        {
+          "player": "Moon",
+          "position": 1
         }
       ],
       "penalties": []

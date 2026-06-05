@@ -434,7 +434,7 @@ function renderPlayers() {
   playerBadges.innerHTML = players
     .map(
       (player) => `
-    <div class="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-center text-sm font-semibold text-blue-700 break-words">
+    <div class="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 px-4 py-3 text-center text-sm font-bold text-blue-800 break-words shadow-sm hover:shadow-md transition-all">
       ${escapeHtml(player)}
     </div>
   `,
@@ -557,9 +557,9 @@ function renderResultInputs() {
       const selectedPositions = previousPositions.filter(Boolean);
 
       return `
-      <div class="rounded-xl border border-slate-200 p-4">
-        <label class="mb-3 block break-words text-center font-bold">${escapeHtml(player)}</label>
-        <select data-player="${escapeHtml(player)}" class="write-control position-select w-full rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400">
+      <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-gray-100 border-2 border-slate-200 p-6 shadow-sm hover:shadow-md transition-all">
+        <label class="mb-4 block break-words text-center font-extrabold text-lg text-slate-800">${escapeHtml(player)}</label>
+        <select data-player="${escapeHtml(player)}" class="write-control position-select w-full rounded-2xl border-2 border-slate-300 px-5 py-4 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 font-semibold transition-all">
           <option value="">Position</option>
           ${[1, 2, 3, 4]
             .map((position) => {
@@ -571,14 +571,17 @@ function renderResultInputs() {
             })
             .join("")}
         </select>
-        <div class="mt-4 space-y-3">
+        <div class="mt-5 space-y-4">
           ${Object.entries(PENALTY_TYPES)
             .map(([type, config]) => {
               const value = previousPenaltyCounts[player]?.[type] || 0;
               return `
-                <label class="block text-xs font-semibold text-slate-600">
-                  <span class="mb-1 block">${escapeHtml(config.label)} (-${config.points})</span>
-                  <input type="number" min="0" step="1" value="${value}" data-player="${escapeHtml(player)}" data-type="${escapeHtml(type)}" class="write-control penalty-count w-full rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400" />
+                <label class="block text-sm font-semibold text-slate-700">
+                  <span class="mb-2 block flex items-center gap-2">
+                    <span>⚠️</span>
+                    ${escapeHtml(config.label)} <span class="text-red-600 font-bold">(-${config.points})</span>
+                  </span>
+                  <input type="number" min="0" step="1" value="${value}" data-player="${escapeHtml(player)}" data-type="${escapeHtml(type)}" class="write-control penalty-count w-full rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-base font-semibold disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 outline-none focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all" />
                 </label>
               `;
             })
@@ -633,21 +636,69 @@ async function runLottery() {
   turnOrderSection.classList.remove("hidden");
 
   turnOrder.innerHTML = lotteryOrder
-    .map(
-      (player, index) => `
-    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
-      <div class="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl font-bold text-white">
+    .map((player, index) => {
+      const pieceColors = [
+        {
+          name: "Blue",
+          bg: "from-blue-500 to-blue-700",
+          text: "text-blue-800",
+          border: "border-blue-300",
+        },
+        {
+          name: "Red",
+          bg: "from-red-500 to-red-700",
+          text: "text-red-800",
+          border: "border-red-300",
+        },
+        {
+          name: "Green",
+          bg: "from-green-500 to-green-700",
+          text: "text-green-800",
+          border: "border-green-300",
+        },
+        {
+          name: "Yellow",
+          bg: "from-yellow-400 to-yellow-600",
+          text: "text-yellow-800",
+          border: "border-yellow-300",
+        },
+      ];
+
+      const color = pieceColors[index];
+
+      return `
+    <div class="rounded-2xl bg-gradient-to-br from-white to-slate-50 border-2 ${color.border} p-6 text-center shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+      <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br ${color.bg} text-3xl font-extrabold text-white shadow-lg border-4 border-white">
         ${index + 1}
       </div>
-      <p class="break-words font-bold">${escapeHtml(player)}</p>
+      <p class="break-words font-bold text-slate-800 text-lg mb-2">${escapeHtml(player)}</p>
+     
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
+        <span class="w-4 h-4 rounded-full bg-gradient-to-br ${color.bg} border-2 border-white shadow"></span>
+        <span class="font-bold ${color.text}">${color.name}</span>
+      </div>
     </div>
-  `,
-    )
+  `;
+    })
     .join("");
 
+  const pieceColors = ["Blue", "Red", "Green", "Yellow"];
   document.getElementById("lotteryInfo").innerHTML = `
-    <p class="font-bold">Lottery completed!</p>
-    <p class="mt-1 break-words text-sm">${lotteryOrder.map(escapeHtml).join(" -> ")}</p>
+    <p class="font-bold text-xl mb-3">🎉 Lottery completed! 🎉</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+      ${lotteryOrder
+        .map(
+          (player, index) => `
+        <div class="flex items-center gap-2 bg-white/50 px-3 py-2 rounded-xl">
+          <span class="font-semibold">${index + 1}.</span>
+          <span class="font-bold">${escapeHtml(player)}</span>
+          <span class="text-slate-500">→</span>
+          <span class="font-bold text-${["blue", "red", "green", "yellow"][index]}-600">${pieceColors[index]}</span>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
   `;
 }
 
@@ -717,7 +768,11 @@ async function saveGame() {
     setData(data);
 
     if (data.duplicateIgnored) {
-      await showAlert("info", "Already saved", "This game result was already saved.");
+      await showAlert(
+        "info",
+        "Already saved",
+        "This game result was already saved.",
+      );
       return;
     }
 
@@ -758,28 +813,161 @@ function getRowClass(index) {
   return "border-t border-slate-200";
 }
 
+// function renderLeaderboard() {
+//   const tbody = document.getElementById("leaderboardBody");
+
+//   tbody.innerHTML = leaderboard
+//     .map((row, index) => {
+//       let rowClass =
+//         "border-t border-slate-100 hover:bg-slate-50 transition-colors";
+//       let rankBadge = "";
+//       if (index === 0) {
+//         rowClass =
+//           "border-t-2 border-green-500 bg-gradient-to-r from-green-100 to-green-50 hover:from-green-200 hover:to-green-500 transition-all";
+//         rankBadge = '<span class="text-2xl mr-2">🥇</span>';
+//       } else if (index === 1) {
+//         rowClass =
+//           "border-t-2 border-green-400 bg-gradient-to-r from-green-100 to-green-50 hover:from-green-200 hover:to-green-500 transition-all";
+//         rankBadge = '<span class="text-2xl mr-2">🥈</span>';
+//       } else if (index === 2) {
+//         rowClass =
+//           "border-t-2 border-orange-300 bg-gradient-to-r from-orange-50 to-amber-50 hover:from-orange-100 hover:to-amber-100 transition-all";
+//         rankBadge = '<span class="text-2xl mr-2">🥉</span>';
+//       } else if (index > 2) {
+//         rowClass =
+//           "border-t-2 border-red-300 bg-gradient-to-r from-red-50 to-amber-50 hover:from-red-100 hover:to-amber-100 transition-all";
+//       }
+
+//       return `
+//       <tr class="${rowClass}">
+//         <td class="p-4 font-extrabold text-lg">${rankBadge}${index + 1}</td>
+//         <td class="break-words p-4 font-semibold text-slate-800">${escapeHtml(row.player)}</td>
+//         <td class="p-4 text-slate-700">${row.matchesPlayed || 0}</td>
+//         <td class="p-4 text-green-600 font-bold">${row.wins || 0}</td>
+//         <td class="p-4 text-red-500 font-semibold">${row.lostCount || 0}</td>
+//         <td class="p-4 font-semibold text-blue-600">${row.gamePoints ?? row.totalPoints ?? 0}</td>
+//         <td class="p-4">${formatPenaltyCell(row.penaltyPoints)}</td>
+//         <td class="p-4 font-extrabold text-xl text-indigo-700">${row.totalPoints || 0}</td>
+//         <td class="p-4 font-semibold text-slate-700">${formatNumber(row.averagePoint)}</td>
+//       </tr>
+//     `;
+//     })
+//     .join("");
+// }
+
 function renderLeaderboard() {
   const tbody = document.getElementById("leaderboardBody");
 
   tbody.innerHTML = leaderboard
-    .map(
-      (row, index) => `
-      <tr class="${getRowClass(index)}">
-        <td class="p-2 font-bold sm:p-3">${index + 1}</td>
-        <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
-        <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
-          <td class="p-2 sm:p-3">${row.wins || 0}</td>
-        <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
-        <td class="p-2 sm:p-3">${row.gamePoints ?? row.totalPoints ?? 0}</td>
-        <td class="p-2 sm:p-3">${formatPenaltyCell(row.penaltyPoints)}</td>
-        <td class="p-2 font-bold sm:p-3">${row.totalPoints || 0}</td>
-        <td class="p-2 sm:p-3">${formatNumber(row.averagePoint)}</td>
-      
+    .map((row, index) => {
+      let rowClass =
+        "border-t border-slate-100 hover:bg-slate-50 transition-colors";
+
+      let rankContent = "";
+
+      if (index === 0) {
+        rowClass =
+          "border-t-2 border-green-500 bg-gradient-to-r from-green-100 to-green-50 hover:from-green-200 hover:to-green-100 transition-all";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥇</span>
+          </div>
+        `;
+      } else if (index === 1) {
+        rowClass =
+          "border-t-2 border-blue-500 bg-gradient-to-r from-blue-100 to-blue-50 hover:from-blue-200 hover:to-blue-100 transition-all";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥈</span>
+          </div>
+        `;
+      } else if (index === 2) {
+        rowClass =
+          "border-t-2 border-yellow-500 bg-gradient-to-r from-yellow-100 to-yellow-50 hover:from-yellow-200 hover:to-yellow-100 transition-all";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥉</span>
+          </div>
+        `;
+      } else {
+        rowClass =
+          "border-t-2 border-red-300 bg-gradient-to-r from-red-50 to-red-25 hover:from-red-100 hover:to-red-50 transition-all";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100 text-red-700 font-bold text-sm">
+              ${index + 1}
+            </span>
+          </div>
+        `;
+      }
+
+      return `
+      <tr class="${rowClass}">
+        <td class="w-20 p-4 text-center align-middle">
+          ${rankContent}
+        </td>
+
+        <td class="break-words p-4 font-semibold text-slate-800">
+          ${escapeHtml(row.player)}
+        </td>
+
+        <td class="p-4 text-slate-700">
+          ${row.matchesPlayed || 0}
+        </td>
+
+        <td class="p-4 font-bold text-green-600">
+          ${row.wins || 0}
+        </td>
+
+        <td class="p-4 font-semibold text-red-500">
+          ${row.lostCount || 0}
+        </td>
+
+        <td class="p-4 font-semibold text-blue-600">
+          ${row.gamePoints ?? row.totalPoints ?? 0}
+        </td>
+
+        <td class="p-4">
+          ${formatPenaltyCell(row.penaltyPoints)}
+        </td>
+
+        <td class="p-4 font-extrabold text-xl text-indigo-700">
+          ${row.totalPoints || 0}
+        </td>
+
+        <td class="p-4 font-semibold text-slate-700">
+          ${formatNumber(row.averagePoint)}
+        </td>
       </tr>
-    `,
-    )
+    `;
+    })
     .join("");
 }
+
+// function renderRanking() {
+//   const tbody = document.getElementById("rankingBody");
+
+//   if (!tbody) return;
+
+//   tbody.innerHTML = ranking
+//     .map(
+//       (row, index) => `
+//       <tr class="border-t border-slate-100 hover:bg-purple-50 transition-colors">
+//         <td class="p-4 font-extrabold text-lg">${index + 1}</td>
+//         <td class="break-words p-4 font-semibold text-slate-800">${escapeHtml(row.player)}</td>
+//         <td class="p-4 text-slate-700">${row.matchesPlayed || 0}</td>
+//         <td class="p-4 font-bold text-purple-700 text-lg">${formatNumber(row.rankingScore)}</td>
+//         <td class="p-4">${formatPenaltyCell(row.penaltyPoints)}</td>
+//         <td class="p-4 font-extrabold text-xl text-indigo-700">${row.totalPoints || 0}</td>
+//       </tr>
+//     `,
+//     )
+//     .join("");
+// }
 
 function renderRanking() {
   const tbody = document.getElementById("rankingBody");
@@ -787,20 +975,105 @@ function renderRanking() {
   if (!tbody) return;
 
   tbody.innerHTML = ranking
-    .map(
-      (row, index) => `
-      <tr class="border-t border-slate-200">
-        <td class="p-2 font-bold sm:p-3">${index + 1}</td>
-        <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
-        <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
-        <td class="p-2 font-bold text-indigo-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
-        <td class="p-2 sm:p-3">${formatPenaltyCell(row.penaltyPoints)}</td>
-        <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
+    .map((row, index) => {
+      let rowClass =
+        "border-t border-slate-100 hover:bg-purple-50 transition-colors";
+
+      let rankContent = "";
+
+      if (index === 0) {
+        rowClass =
+          "border-t-2 border-green-500 bg-gradient-to-r from-green-100 to-green-50";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥇</span>
+          </div>
+        `;
+      } else if (index === 1) {
+        rowClass =
+          "border-t-2 border-blue-500 bg-gradient-to-r from-blue-100 to-blue-50";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥈</span>
+          </div>
+        `;
+      } else if (index === 2) {
+        rowClass =
+          "border-t-2 border-yellow-500 bg-gradient-to-r from-yellow-100 to-yellow-50";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥉</span>
+          </div>
+        `;
+      } else {
+        rowClass =
+          "border-t-2 border-red-300 bg-gradient-to-r from-red-50 to-red-25 hover:from-red-100 hover:to-red-50 transition-all";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100 text-red-700 font-bold text-sm">
+              ${index + 1}
+            </span>
+          </div>
+        `;
+      }
+
+      return `
+      <tr class="${rowClass}">
+        <td class="w-20 p-4 text-center align-middle">
+          ${rankContent}
+        </td>
+
+        <td class="break-words p-4 font-semibold text-slate-800">
+          ${escapeHtml(row.player)}
+        </td>
+
+        <td class="p-4 text-slate-700">
+          ${row.matchesPlayed || 0}
+        </td>
+
+        <td class="p-4 font-bold text-purple-700 text-lg">
+          ${formatNumber(row.rankingScore)}
+        </td>
+
+        <td class="p-4">
+          ${formatPenaltyCell(row.penaltyPoints)}
+        </td>
+
+        <td class="p-4 font-extrabold text-xl text-indigo-700">
+          ${row.totalPoints || 0}
+        </td>
       </tr>
-    `,
-    )
+    `;
+    })
     .join("");
 }
+
+// function renderAllTimeRanking() {
+//   const tbody = document.getElementById("allTimeRankingBody");
+
+//   if (!tbody) return;
+
+//   tbody.innerHTML = allTimeRanking
+//     .map(
+//       (row, index) => `
+//       <tr class="border-t border-slate-100 hover:bg-teal-50 transition-colors">
+//         <td class="p-4 font-extrabold text-lg">${index + 1}</td>
+//         <td class="break-words p-4 font-semibold text-slate-800">${escapeHtml(row.player)}</td>
+//         <td class="p-4 text-slate-700">${row.matchesPlayed || 0}</td>
+//         <td class="p-4 text-green-600 font-bold">${row.wins || 0}</td>
+//         <td class="p-4 text-red-500 font-semibold">${row.lostCount || 0}</td>
+//         <td class="p-4 font-bold text-teal-700 text-lg">${formatNumber(row.rankingScore)}</td>
+//         <td class="p-4">${formatPenaltyCell(row.penaltyPoints)}</td>
+//         <td class="p-4 font-extrabold text-xl text-teal-700">${row.totalPoints || 0}</td>
+//       </tr>
+//     `,
+//     )
+//     .join("");
+// }
 
 function renderAllTimeRanking() {
   const tbody = document.getElementById("allTimeRankingBody");
@@ -808,21 +1081,88 @@ function renderAllTimeRanking() {
   if (!tbody) return;
 
   tbody.innerHTML = allTimeRanking
-    .map(
-      (row, index) => `
-      <tr class="border-t border-slate-200">
-        <td class="p-2 font-bold sm:p-3">${index + 1}</td>
-        <td class="break-words p-2 font-semibold sm:p-3">${escapeHtml(row.player)}</td>
-        <td class="p-2 sm:p-3">${row.matchesPlayed || 0}</td>
-                <td class="p-2 sm:p-3">${row.wins || 0}</td>
-        <td class="p-2 sm:p-3">${row.lostCount || 0}</td>
-        <td class="p-2 font-bold text-teal-700 sm:p-3">${formatNumber(row.rankingScore)}</td>
-        <td class="p-2 sm:p-3">${formatPenaltyCell(row.penaltyPoints)}</td>
-        <td class="p-2 sm:p-3">${row.totalPoints || 0}</td>
-        
+    .map((row, index) => {
+      let rowClass =
+        "border-t border-slate-100 hover:bg-teal-50 transition-colors";
+
+      let rankContent = "";
+
+      if (index === 0) {
+        rowClass =
+          "border-t-2 border-green-500 bg-gradient-to-r from-green-100 to-green-50";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥇</span>
+          </div>
+        `;
+      } else if (index === 1) {
+        rowClass =
+          "border-t-2 border-blue-500 bg-gradient-to-r from-blue-100 to-blue-50";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥈</span>
+          </div>
+        `;
+      } else if (index === 2) {
+        rowClass =
+          "border-t-2 border-yellow-500 bg-gradient-to-r from-yellow-100 to-yellow-50";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="text-3xl">🥉</span>
+          </div>
+        `;
+      } else {
+        rowClass =
+          "border-t-2 border-red-300 bg-gradient-to-r from-red-50 to-red-25 hover:from-red-100 hover:to-red-50 transition-all";
+
+        rankContent = `
+          <div class="flex justify-center items-center">
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100 text-red-700 font-bold text-sm">
+              ${index + 1}
+            </span>
+          </div>
+        `;
+      }
+
+      return `
+      <tr class="${rowClass}">
+        <td class="w-20 p-4 text-center align-middle">
+          ${rankContent}
+        </td>
+
+        <td class="break-words p-4 font-semibold text-slate-800">
+          ${escapeHtml(row.player)}
+        </td>
+
+        <td class="p-4 text-slate-700">
+          ${row.matchesPlayed || 0}
+        </td>
+
+        <td class="p-4 font-bold text-green-600">
+          ${row.wins || 0}
+        </td>
+
+        <td class="p-4 font-semibold text-red-500">
+          ${row.lostCount || 0}
+        </td>
+
+        <td class="p-4 font-bold text-teal-700 text-lg">
+          ${formatNumber(row.rankingScore)}
+        </td>
+
+        <td class="p-4">
+          ${formatPenaltyCell(row.penaltyPoints)}
+        </td>
+
+        <td class="p-4 font-extrabold text-xl text-teal-700">
+          ${row.totalPoints || 0}
+        </td>
       </tr>
-    `,
-    )
+    `;
+    })
     .join("");
 }
 
@@ -863,21 +1203,61 @@ function renderHistory() {
       );
 
       return `
-      <div class="rounded-xl border border-purple-200 bg-purple-50 p-4">
-        <p class="mb-3 font-semibold text-slate-700">
-          Season ${game.seasonNumber || 1}, Match ${game.matchNumber || 1} - ${new Date(game.date).toLocaleString()}
-        </p>
+      <div class="rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 p-6 shadow-sm hover:shadow-md transition-all">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-lg text-purple-900 flex items-center gap-2">
+            <span class="text-purple-500">🎮</span>
+            Season ${game.seasonNumber || 1}, Match ${game.matchNumber || 1}
+          </h3>
+          <p class="text-sm text-slate-600">${new Date(game.date).toLocaleString()}</p>
+        </div>
 
-        <p class="text-sm font-bold">Turn Order:</p>
-        <p class="mb-3 break-words text-sm">${(game.lotteryOrder || []).length ? game.lotteryOrder.map(escapeHtml).join(" -> ") : "Lottery not used"}</p>
+        <div class="mb-4">
+          <p class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <span>🔄</span> Turn Order & Colors:
+          </p>
+          <div class="space-y-2">
+            ${
+              (game.lotteryOrder || []).length
+                ? game.lotteryOrder
+                    .map((player, idx) => {
+                      const colorNames = ["Blue", "Red", "Green", "Yellow"];
+                      const colorClasses = [
+                        "bg-blue-100 text-blue-800",
+                        "bg-red-100 text-red-800",
+                        "bg-green-100 text-green-800",
+                        "bg-yellow-100 text-yellow-800",
+                      ];
+                      return `
+                <div class="flex items-center justify-between bg-white px-4 py-2 rounded-xl">
+                  <span class="font-semibold">${idx + 1}. ${escapeHtml(player)}</span>
+                  <span class="font-bold px-3 py-1 rounded-full ${colorClasses[idx]}">${colorNames[idx]}</span>
+                </div>
+              `;
+                    })
+                    .join("")
+                : "Lottery not used"
+            }
+          </div>
+        </div>
 
-        <p class="text-sm font-bold">Result:</p>
-        <p class="break-words text-sm">
-          ${sortedResults.map((result) => `${result.position}. ${escapeHtml(result.player)}`).join(" | ")}
-        </p>
+        <div class="mb-4">
+          <p class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <span>🏅</span> Result:
+          </p>
+          <p class="break-words text-slate-700 bg-white px-4 py-2 rounded-xl font-semibold">
+            ${sortedResults.map((result) => `${result.position}. ${escapeHtml(result.player)}`).join(" | ")}
+          </p>
+        </div>
 
-        <p class="mt-3 text-sm font-bold">Penalties:</p>
-        <p class="break-words text-sm">${formatPenaltySummary(game.penalties || [])}</p>
+        <div>
+          <p class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <span>⚠️</span> Penalties:
+          </p>
+          <p class="break-words text-slate-700 bg-white px-4 py-2 rounded-xl">
+            ${formatPenaltySummary(game.penalties || [])}
+          </p>
+        </div>
       </div>
     `;
     })
@@ -889,15 +1269,15 @@ function renderHistory() {
     const page = index + 1;
     const activeClass =
       page === historyPage
-        ? "bg-purple-600 text-white"
-        : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50";
-    return `<button type="button" onclick="setHistoryPage(${page})" class="h-10 min-w-10 rounded-lg px-3 text-sm font-semibold ${activeClass}">${page}</button>`;
+        ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
+        : "border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-purple-300";
+    return `<button type="button" onclick="setHistoryPage(${page})" class="h-12 min-w-12 rounded-2xl px-4 text-base font-bold transition-all duration-200 ${activeClass}">${page}</button>`;
   }).join("");
 
   controls.innerHTML = `
-    <button type="button" onclick="setHistoryPage(${historyPage - 1})" ${historyPage === 1 ? "disabled" : ""} class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">Previous</button>
-    <div class="flex flex-wrap justify-center gap-2">${pageButtons}</div>
-    <button type="button" onclick="setHistoryPage(${historyPage + 1})" ${historyPage === totalPages ? "disabled" : ""} class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">Next</button>
+    <button type="button" onclick="setHistoryPage(${historyPage - 1})" ${historyPage === 1 ? "disabled" : ""} class="rounded-2xl border-2 border-slate-200 bg-white px-6 py-3 text-base font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 transition-all">Previous</button>
+    <div class="flex flex-wrap justify-center gap-3">${pageButtons}</div>
+    <button type="button" onclick="setHistoryPage(${historyPage + 1})" ${historyPage === totalPages ? "disabled" : ""} class="rounded-2xl border-2 border-slate-200 bg-white px-6 py-3 text-base font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 transition-all">Next</button>
   `;
 }
 
@@ -1076,8 +1456,10 @@ function renderSeasonHistory() {
 
   if (seasonHistory.length === 0) {
     container.innerHTML = `
-      <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-slate-500 sm:p-5">
-        No completed seasons yet.
+      <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-gray-100 p-8 text-center text-slate-600">
+        <div class="text-5xl mb-4">🏆</div>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">No completed seasons yet</h3>
+        <p class="text-slate-600">Keep playing to complete seasons and see your progress!</p>
       </div>
     `;
     return;
@@ -1089,37 +1471,41 @@ function renderSeasonHistory() {
       const rows = (season.leaderboard || [])
         .map(
           (row, index) => `
-          <tr class="border-t border-slate-200">
-            <td class="p-2 font-bold">${index + 1}</td>
-            <td class="break-words p-2 font-semibold">${escapeHtml(row.player)}</td>
-            <td class="p-2">${row.matchesPlayed || row.matches || 0}</td>
-            <td class="p-2">${row.gamePoints ?? row.totalPoints ?? row.points ?? 0}</td>
-            <td class="p-2">${formatPenaltyCell(row.penaltyPoints)}</td>
-            <td class="p-2">${row.totalPoints || row.points || 0}</td>
-            <td class="p-2">${formatNumber(row.averagePoint)}</td>
-            <td class="p-2">${row.lostCount || 0}</td>
+          <tr class="border-t border-slate-100 hover:bg-emerald-50 transition-colors">
+            <td class="p-4 font-extrabold text-lg">${index + 1}</td>
+            <td class="break-words p-4 font-semibold text-slate-800">${escapeHtml(row.player)}</td>
+            <td class="p-4 text-slate-700">${row.matchesPlayed || row.matches || 0}</td>
+            <td class="p-4 font-semibold text-emerald-700">${row.gamePoints ?? row.totalPoints ?? row.points ?? 0}</td>
+            <td class="p-4">${formatPenaltyCell(row.penaltyPoints)}</td>
+            <td class="p-4 font-extrabold text-xl text-emerald-700">${row.totalPoints || row.points || 0}</td>
+            <td class="p-4 font-semibold text-slate-700">${formatNumber(row.averagePoint)}</td>
+            <td class="p-4 text-red-500 font-semibold">${row.lostCount || 0}</td>
           </tr>
         `,
         )
         .join("");
 
       return `
-        <details class="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-          <summary class="cursor-pointer font-bold text-emerald-800">
-            Season ${season.seasonNumber} - Completed ${new Date(season.completedAt).toLocaleString()}
+        <details class="rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 p-6 shadow-sm hover:shadow-md transition-all">
+          <summary class="cursor-pointer font-extrabold text-xl text-emerald-900 flex items-center gap-3">
+            <span class="text-3xl">🏅</span>
+            Season ${season.seasonNumber}
+            <span class="text-sm text-emerald-600 font-semibold ml-auto">
+              Completed ${new Date(season.completedAt).toLocaleString()}
+            </span>
           </summary>
-          <div class="mt-4 overflow-x-auto">
-            <table class="w-full rounded-xl border border-slate-200 bg-white text-left text-sm">
-              <thead class="bg-emerald-100 text-emerald-800">
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-slate-200">
+            <table class="w-full bg-white text-left text-sm sm:text-base">
+              <thead class="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-900">
                 <tr>
-                  <th class="p-2">Rank</th>
-                  <th class="p-2">Player</th>
-                  <th class="p-2">Total Matches</th>
-                  <th class="p-2">Game Points</th>
-                  <th class="p-2">Penalty</th>
-                  <th class="p-2">Total Points</th>
-                  <th class="p-2">Average Point</th>
-                  <th class="p-2">Lost Count</th>
+                  <th class="p-4 font-bold">Rank</th>
+                  <th class="p-4 font-bold">Player</th>
+                  <th class="p-4 font-bold">Total Matches</th>
+                  <th class="p-4 font-bold">Game Points</th>
+                  <th class="p-4 font-bold">Penalty</th>
+                  <th class="p-4 font-bold">Total Points</th>
+                  <th class="p-4 font-bold">Average Point</th>
+                  <th class="p-4 font-bold">Lost Count</th>
                 </tr>
               </thead>
               <tbody>${rows}</tbody>

@@ -1216,7 +1216,7 @@ function renderHistory() {
           <p class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
             <span>🔄</span> Turn Order & Colors:
           </p>
-          <div class="space-y-2">
+          <div class="flex flex-wrap gap-2">
             ${
               (game.lotteryOrder || []).length
                 ? game.lotteryOrder
@@ -1230,7 +1230,7 @@ function renderHistory() {
                       ];
                       return `
                 <div class="flex items-center justify-between bg-white px-4 py-2 rounded-xl">
-                  <span class="font-semibold">${idx + 1}. ${escapeHtml(player)}</span>
+                  <span class="font-semibold mr-1">${escapeHtml(player)}</span>
                   <span class="font-bold px-3 py-1 rounded-full ${colorClasses[idx]}">${colorNames[idx]}</span>
                 </div>
               `;

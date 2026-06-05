@@ -207,6 +207,47 @@ function buildSeasonHistoryFromOldGames(players, oldGames) {
   };
 }
 
+function resultSignature(results = []) {
+  return results
+    .map((result) => ({
+      player: String(result?.player || "").trim(),
+      position: Number(result?.position),
+    }))
+    .sort((a, b) => a.player.localeCompare(b.player));
+}
+
+function penaltySignature(penalties = []) {
+  return penalties
+    .map((penalty) => {
+      const type = String(penalty?.type || "").trim();
+      return {
+        player: String(penalty?.player || "").trim(),
+        type,
+        points:
+          Number(penalty?.points) ||
+          Number(PENALTY_TYPES[type]?.points) ||
+          1,
+      };
+    })
+    .filter((penalty) => penalty.player && PENALTY_TYPES[penalty.type])
+    .sort((a, b) => {
+      if (a.player !== b.player) return a.player.localeCompare(b.player);
+      if (a.type !== b.type) return a.type.localeCompare(b.type);
+      return a.points - b.points;
+    });
+}
+
+function isSameGamePayload(game, payload) {
+  return (
+    JSON.stringify(game?.lotteryOrder || []) ===
+      JSON.stringify(payload.lotteryOrder || []) &&
+    JSON.stringify(resultSignature(game?.results)) ===
+      JSON.stringify(resultSignature(payload.results)) &&
+    JSON.stringify(penaltySignature(game?.penalties)) ===
+      JSON.stringify(penaltySignature(payload.penalties))
+  );
+}
+
 export function normalizeData(data) {
   const players = cleanPlayers(data?.players);
   const seasonHistory = Array.isArray(data?.seasonHistory)
@@ -290,6 +331,16 @@ export function getDerivedData(data) {
 
 export function addGameResult(data, payload) {
   const normalized = normalizeData(data);
+  const lastGame = normalized.games.at(-1);
+
+  if (lastGame && isSameGamePayload(lastGame, payload)) {
+    return {
+      data: normalized,
+      completedSeason: null,
+      duplicateGame: lastGame,
+    };
+  }
+
   const currentSeason = normalized.currentSeason;
   const matchNumber = currentSeason.matches.length + 1;
   const game = {

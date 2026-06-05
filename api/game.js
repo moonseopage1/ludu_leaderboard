@@ -105,6 +105,7 @@ export default async function handler(req, res) {
     res.status(200).json({
       ...getDerivedData(saved.data),
       completedSeason: saved.completedSeason,
+      duplicateIgnored: Boolean(saved.duplicateGame),
     });
   } catch (error) {
     console.error("Error saving game:", error);

@@ -154,6 +154,7 @@ app.post("/api/game", async (req, res) => {
   res.json({
     ...getDerivedData(saved.data),
     completedSeason: saved.completedSeason,
+    duplicateIgnored: Boolean(saved.duplicateGame),
   });
 });
 

@@ -637,27 +637,68 @@ async function runLottery() {
 
   turnOrder.innerHTML = lotteryOrder
     .map((player, index) => {
-      const colors = [
-        "from-green-400 to-emerald-500",
-        "from-blue-400 to-indigo-500",
-        "from-yellow-400 to-orange-500",
-        "from-purple-400 to-pink-500",
+      const pieceColors = [
+        {
+          name: "Blue",
+          bg: "from-blue-500 to-blue-700",
+          text: "text-blue-800",
+          border: "border-blue-300",
+        },
+        {
+          name: "Red",
+          bg: "from-red-500 to-red-700",
+          text: "text-red-800",
+          border: "border-red-300",
+        },
+        {
+          name: "Green",
+          bg: "from-green-500 to-green-700",
+          text: "text-green-800",
+          border: "border-green-300",
+        },
+        {
+          name: "Yellow",
+          bg: "from-yellow-400 to-yellow-600",
+          text: "text-yellow-800",
+          border: "border-yellow-300",
+        },
       ];
+
+      const color = pieceColors[index];
+
       return `
-    <div class="rounded-2xl bg-white border-2 border-slate-100 p-6 text-center shadow-sm hover:shadow-lg transition-all transform hover:-translate-y-1">
-      <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br ${colors[index]} text-2xl font-extrabold text-white shadow-lg">
+    <div class="rounded-2xl bg-gradient-to-br from-white to-slate-50 border-2 ${color.border} p-6 text-center shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+      <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br ${color.bg} text-3xl font-extrabold text-white shadow-lg border-4 border-white">
         ${index + 1}
       </div>
-      <p class="break-words font-bold text-slate-800 text-lg">${escapeHtml(player)}</p>
-      <p class="text-xs text-slate-500 mt-2 font-semibold">${getOrdinal(index + 1)}</p>
+      <p class="break-words font-bold text-slate-800 text-lg mb-2">${escapeHtml(player)}</p>
+     
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
+        <span class="w-4 h-4 rounded-full bg-gradient-to-br ${color.bg} border-2 border-white shadow"></span>
+        <span class="font-bold ${color.text}">${color.name}</span>
+      </div>
     </div>
   `;
     })
     .join("");
 
+  const pieceColors = ["Blue", "Red", "Green", "Yellow"];
   document.getElementById("lotteryInfo").innerHTML = `
-    <p class="font-bold">Lottery completed!</p>
-    <p class="mt-1 break-words text-sm">${lotteryOrder.map(escapeHtml).join(" -> ")}</p>
+    <p class="font-bold text-xl mb-3">🎉 Lottery completed! 🎉</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+      ${lotteryOrder
+        .map(
+          (player, index) => `
+        <div class="flex items-center gap-2 bg-white/50 px-3 py-2 rounded-xl">
+          <span class="font-semibold">${index + 1}.</span>
+          <span class="font-bold">${escapeHtml(player)}</span>
+          <span class="text-slate-500">→</span>
+          <span class="font-bold text-${["blue", "red", "green", "yellow"][index]}-600">${pieceColors[index]}</span>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
   `;
 }
 
@@ -1173,11 +1214,31 @@ function renderHistory() {
 
         <div class="mb-4">
           <p class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
-            <span>🔄</span> Turn Order:
+            <span>🔄</span> Turn Order & Colors:
           </p>
-          <p class="break-words text-slate-700 bg-white px-4 py-2 rounded-xl">
-            ${(game.lotteryOrder || []).length ? game.lotteryOrder.map(escapeHtml).join(" → ") : "Lottery not used"}
-          </p>
+          <div class="space-y-2">
+            ${
+              (game.lotteryOrder || []).length
+                ? game.lotteryOrder
+                    .map((player, idx) => {
+                      const colorNames = ["Blue", "Red", "Green", "Yellow"];
+                      const colorClasses = [
+                        "bg-blue-100 text-blue-800",
+                        "bg-red-100 text-red-800",
+                        "bg-green-100 text-green-800",
+                        "bg-yellow-100 text-yellow-800",
+                      ];
+                      return `
+                <div class="flex items-center justify-between bg-white px-4 py-2 rounded-xl">
+                  <span class="font-semibold">${idx + 1}. ${escapeHtml(player)}</span>
+                  <span class="font-bold px-3 py-1 rounded-full ${colorClasses[idx]}">${colorNames[idx]}</span>
+                </div>
+              `;
+                    })
+                    .join("")
+                : "Lottery not used"
+            }
+          </div>
         </div>
 
         <div class="mb-4">

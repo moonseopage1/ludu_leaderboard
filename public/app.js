@@ -24,6 +24,7 @@ let allTimeRanking = [];
 let lotteryOrder = [];
 let historyPage = 1;
 let historyPageLimit = 5;
+let isSavingGame = false;
 
 function getWritePin() {
   return sessionStorage.getItem(WRITE_PIN_KEY) || "";
@@ -147,6 +148,7 @@ function updateWriteControls() {
   document.querySelectorAll(".write-control").forEach((control) => {
     control.disabled = !unlocked;
   });
+  setSaveGameButtonState();
 
   const status = document.getElementById("writeStatus");
   const unlockButton = document.getElementById("unlockButton");
@@ -170,6 +172,14 @@ function updateWriteControls() {
 
     panel.classList.toggle("hidden", !unlocked);
   });
+}
+
+function setSaveGameButtonState() {
+  const button = document.getElementById("saveGameButton");
+  if (!button) return;
+
+  button.disabled = isSavingGame || !hasWriteAccess();
+  button.textContent = isSavingGame ? "Saving..." : "Save Game Result";
 }
 
 function escapeHtml(value) {
@@ -642,75 +652,89 @@ async function runLottery() {
 }
 
 async function saveGame() {
+  if (isSavingGame) return;
   if (!(await ensureWriteAccess())) return;
 
-  const selected = getSelectedPlayers();
+  isSavingGame = true;
+  setSaveGameButtonState();
 
-  if (selected.length !== 4 || new Set(selected).size !== 4) {
-    await showAlert(
-      "warning",
-      "Select 4 players",
-      "Please select 4 different players.",
-    );
-    return;
+  try {
+    const selected = getSelectedPlayers();
+
+    if (selected.length !== 4 || new Set(selected).size !== 4) {
+      await showAlert(
+        "warning",
+        "Select 4 players",
+        "Please select 4 different players.",
+      );
+      return;
+    }
+
+    const positionSelects = document.querySelectorAll(".position-select");
+    const results = [...positionSelects].map((select) => ({
+      player: select.dataset.player,
+      position: Number(select.value),
+    }));
+    const positions = results.map((result) => result.position);
+    const penalties = getPenaltyEntries();
+
+    if (
+      positions.length !== 4 ||
+      positions.includes(0) ||
+      new Set(positions).size !== 4
+    ) {
+      await showAlert(
+        "warning",
+        "Invalid positions",
+        "Please select unique positions 1, 2, 3 and 4.",
+      );
+      return;
+    }
+
+    const res = await fetch(`${API}/game`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        lotteryOrder: lotteryOrder.length === 4 ? lotteryOrder : [],
+        results,
+        penalties,
+      }),
+    });
+
+    if (!res.ok) {
+      await handleWriteError(res, "Failed to save game.");
+      return;
+    }
+
+    lotteryOrder = [];
+    document.getElementById("turnOrderSection").classList.add("hidden");
+
+    document.querySelectorAll(".player-select").forEach((select) => {
+      select.value = "";
+    });
+
+    const data = await res.json();
+    setData(data);
+
+    if (data.duplicateIgnored) {
+      await showAlert("info", "Already saved", "This game result was already saved.");
+      return;
+    }
+
+    if (data.completedSeason) {
+      await showAlert(
+        "success",
+        "Season completed",
+        `Season ${data.completedSeason.seasonNumber} completed and saved to Season History.`,
+      );
+      return;
+    }
+
+    await showAlert("success", "Saved", "Game result saved successfully.");
+  } finally {
+    isSavingGame = false;
+    setSaveGameButtonState();
   }
-
-  const positionSelects = document.querySelectorAll(".position-select");
-  const results = [...positionSelects].map((select) => ({
-    player: select.dataset.player,
-    position: Number(select.value),
-  }));
-  const positions = results.map((result) => result.position);
-  const penalties = getPenaltyEntries();
-
-  if (
-    positions.length !== 4 ||
-    positions.includes(0) ||
-    new Set(positions).size !== 4
-  ) {
-    await showAlert(
-      "warning",
-      "Invalid positions",
-      "Please select unique positions 1, 2, 3 and 4.",
-    );
-    return;
-  }
-
-  const res = await fetch(`${API}/game`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({
-      lotteryOrder: lotteryOrder.length === 4 ? lotteryOrder : [],
-      results,
-      penalties,
-    }),
-  });
-
-  if (!res.ok) {
-    await handleWriteError(res, "Failed to save game.");
-    return;
-  }
-
-  lotteryOrder = [];
-  document.getElementById("turnOrderSection").classList.add("hidden");
-
-  document.querySelectorAll(".player-select").forEach((select) => {
-    select.value = "";
-  });
-
-  const data = await res.json();
-  setData(data);
-
-  if (data.completedSeason) {
-    await showAlert(
-      "success",
-      "Season completed",
-      `Season ${data.completedSeason.seasonNumber} completed and saved to Season History.`,
-    );
-    return;
-  }
-
-  await showAlert("success", "Saved", "Game result saved successfully.");
 }
 
 function renderSeasonProgress() {

@@ -35,6 +35,63 @@
           }
         ],
         "penalties": []
+      },
+      {
+        "id": 1780656767941,
+        "date": "2026-06-05T10:52:47.941Z",
+        "seasonNumber": 3,
+        "matchNumber": 2,
+        "lotteryOrder": [],
+        "results": [
+          {
+            "player": "Babu Vai",
+            "position": 2
+          },
+          {
+            "player": "Adif",
+            "position": 4
+          },
+          {
+            "player": "Moon",
+            "position": 3
+          },
+          {
+            "player": "Sonet",
+            "position": 1
+          }
+        ],
+        "penalties": []
+      },
+      {
+        "id": 1780656791747,
+        "date": "2026-06-05T10:53:11.747Z",
+        "seasonNumber": 3,
+        "matchNumber": 3,
+        "lotteryOrder": [
+          "Sonet",
+          "Adif",
+          "Babu Vai",
+          "Saidul"
+        ],
+        "results": [
+          {
+            "player": "Babu Vai",
+            "position": 1
+          },
+          {
+            "player": "Saidul",
+            "position": 2
+          },
+          {
+            "player": "Adif",
+            "position": 3
+          },
+          {
+            "player": "Sonet",
+            "position": 4
+          }
+        ],
+        "penalties": []
       }
     ]
   },
@@ -646,6 +703,63 @@
         {
           "player": "Moon",
           "position": 1
+        }
+      ],
+      "penalties": []
+    },
+    {
+      "id": 1780656767941,
+      "date": "2026-06-05T10:52:47.941Z",
+      "seasonNumber": 3,
+      "matchNumber": 2,
+      "lotteryOrder": [],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 2
+        },
+        {
+          "player": "Adif",
+          "position": 4
+        },
+        {
+          "player": "Moon",
+          "position": 3
+        },
+        {
+          "player": "Sonet",
+          "position": 1
+        }
+      ],
+      "penalties": []
+    },
+    {
+      "id": 1780656791747,
+      "date": "2026-06-05T10:53:11.747Z",
+      "seasonNumber": 3,
+      "matchNumber": 3,
+      "lotteryOrder": [
+        "Sonet",
+        "Adif",
+        "Babu Vai",
+        "Saidul"
+      ],
+      "results": [
+        {
+          "player": "Babu Vai",
+          "position": 1
+        },
+        {
+          "player": "Saidul",
+          "position": 2
+        },
+        {
+          "player": "Adif",
+          "position": 3
+        },
+        {
+          "player": "Sonet",
+          "position": 4
         }
       ],
       "penalties": []

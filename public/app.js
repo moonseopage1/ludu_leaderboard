@@ -308,12 +308,8 @@ function calculateLeaderboard(sourcePlayers, matches) {
   return calculateStats(sourcePlayers, matches).sort((a, b) => {
     if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
     if (b.wins !== a.wins) return b.wins - a.wins;
+    if (b.averagePoint !== a.averagePoint) return b.averagePoint - a.averagePoint;
     if (a.lostCount !== b.lostCount) return a.lostCount - b.lostCount;
-    // check here avarage point also
-    if (b.averagePoint !== a.averagePoint) {
-      return b.averagePoint - a.averagePoint;
-    }
-
     return a.player.localeCompare(b.player);
   });
 }

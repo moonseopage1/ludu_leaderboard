@@ -86,6 +86,19 @@
         transform: translateY(-10px);
       }
     }
+    .ranking-info { position: relative; display: inline-flex; cursor: pointer; }
+    .ranking-info .ranking-tooltip {
+      visibility: hidden; opacity: 0;
+      position: absolute; left: 0; top: 1.75rem; z-index: 50;
+      width: min(28rem, 92vw); padding: 1.1rem;
+      background: #0f172a; color: #f8fafc;
+      border-radius: 0.75rem; box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      font-size: 0.75rem; line-height: 1.6;
+      transition: opacity 0.15s, visibility 0.15s;
+      pointer-events: none;
+    }
+    .ranking-info:hover .ranking-tooltip,
+    .ranking-info.open .ranking-tooltip { visibility: visible; opacity: 1; pointer-events: auto; }
   </style>
 </head>
 
@@ -236,7 +249,7 @@
               <th class="p-4 font-bold">Player</th>
               <th class="p-4 font-bold">Matches</th>
               <th class="p-4 font-bold">Wins</th>
-              <th class="p-4 font-bold">Lost</th>
+              <th class="p-4 font-bold">Losts</th>
               <th class="p-4 font-bold">Game Pts</th>
               <th class="p-4 font-bold">Penalty</th>
               <th class="p-4 font-bold">Total</th>
@@ -261,6 +274,42 @@
           📊
         </div>
         <h2 class="text-xl font-bold text-slate-800">Current Season Ranking</h2>
+        <span class="ranking-info" onclick="this.classList.toggle('open')">
+          <span class="text-indigo-500 text-xl font-black hover:text-indigo-700 transition-colors select-none leading-none">ℹ</span>
+          <div class="ranking-tooltip">
+            <p class="font-bold text-sm mb-2">📊 Ranking Formula</p>
+            <p class="font-mono bg-slate-800 rounded px-2 py-1 mb-3 text-green-300">Score = Avg × LossFactor × MatchFactor</p>
+
+            <div class="mb-2">
+              <p class="font-semibold text-yellow-300 mb-0.5">① Avg — Average Points per Match</p>
+              <p class="font-mono bg-slate-800 rounded px-2 py-0.5 text-slate-200 mb-0.5">Avg = Total Points ÷ Matches Played</p>
+              <p class="text-slate-400">Measures how well you score each game. A player with 24 pts in 8 matches has Avg = <span class="text-white">3.00</span>.</p>
+            </div>
+
+            <div class="mb-2">
+              <p class="font-semibold text-yellow-300 mb-0.5">② LossFactor — Loss Penalty</p>
+              <p class="font-mono bg-slate-800 rounded px-2 py-0.5 text-slate-200 mb-0.5">LossFactor = 1 − (Last-place Finishes ÷ Matches)</p>
+              <p class="text-slate-400">Reduces your score if you often finish 4th. Never lost → <span class="text-white">1.0</span> (no penalty). Lost half your games → <span class="text-white">0.5</span>.</p>
+            </div>
+
+            <div class="mb-3">
+              <p class="font-semibold text-yellow-300 mb-0.5">③ MatchFactor — Experience Multiplier</p>
+              <p class="font-mono bg-slate-800 rounded px-2 py-0.5 text-slate-200 mb-0.5">MatchFactor = min(1, Matches ÷ 10)</p>
+              <p class="text-slate-400">Scales score down for players with fewer than 10 games. At 10+ games it becomes <span class="text-white">1.0</span> (full score). Prevents a newcomer with 1 lucky win from topping the table.</p>
+            </div>
+
+            <div class="border-t border-slate-600 pt-2">
+              <p class="font-semibold text-slate-200 mb-1">📌 Example</p>
+              <p class="text-slate-300">Player: <span class="text-white">8 matches</span>, <span class="text-white">22 pts</span>, <span class="text-white">2 last-place finishes</span></p>
+              <p class="font-mono bg-slate-800 rounded px-2 py-1 mt-1 text-slate-200">
+                Avg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 22 ÷ 8 = <span class="text-green-300">2.75</span><br>
+                LossFactor = 1 − (2 ÷ 8) = <span class="text-green-300">0.75</span><br>
+                MatchFactor = 8 ÷ 10 = <span class="text-green-300">0.80</span><br>
+                <span class="text-yellow-300 font-bold">Score = 2.75 × 0.75 × 0.80 = 1.65</span>
+              </p>
+            </div>
+          </div>
+        </span>
       </div>
 
       <div class="w-full overflow-x-auto rounded-2xl border border-slate-200">
@@ -287,6 +336,42 @@
           ⭐
         </div>
         <h2 class="text-xl font-bold text-slate-800">All Time Ranking</h2>
+        <span class="ranking-info" onclick="this.classList.toggle('open')">
+          <span class="text-teal-500 text-xl font-black hover:text-teal-700 transition-colors select-none leading-none">ℹ</span>
+          <div class="ranking-tooltip">
+            <p class="font-bold text-sm mb-2">📊 Ranking Formula</p>
+            <p class="font-mono bg-slate-800 rounded px-2 py-1 mb-3 text-green-300">Score = Avg × LossFactor × MatchFactor</p>
+
+            <div class="mb-2">
+              <p class="font-semibold text-yellow-300 mb-0.5">① Avg — Average Points per Match</p>
+              <p class="font-mono bg-slate-800 rounded px-2 py-0.5 text-slate-200 mb-0.5">Avg = Total Points ÷ Matches Played</p>
+              <p class="text-slate-400">Measures how well you score each game. A player with 24 pts in 8 matches has Avg = <span class="text-white">3.00</span>.</p>
+            </div>
+
+            <div class="mb-2">
+              <p class="font-semibold text-yellow-300 mb-0.5">② LossFactor — Loss Penalty</p>
+              <p class="font-mono bg-slate-800 rounded px-2 py-0.5 text-slate-200 mb-0.5">LossFactor = 1 − (Last-place Finishes ÷ Matches)</p>
+              <p class="text-slate-400">Reduces your score if you often finish 4th. Never lost → <span class="text-white">1.0</span> (no penalty). Lost half your games → <span class="text-white">0.5</span>.</p>
+            </div>
+
+            <div class="mb-3">
+              <p class="font-semibold text-yellow-300 mb-0.5">③ MatchFactor — Experience Multiplier</p>
+              <p class="font-mono bg-slate-800 rounded px-2 py-0.5 text-slate-200 mb-0.5">MatchFactor = min(1, Matches ÷ 10)</p>
+              <p class="text-slate-400">Scales score down for players with fewer than 10 games. At 10+ games it becomes <span class="text-white">1.0</span> (full score). Prevents a newcomer with 1 lucky win from topping the table.</p>
+            </div>
+
+            <div class="border-t border-slate-600 pt-2">
+              <p class="font-semibold text-slate-200 mb-1">📌 Example</p>
+              <p class="text-slate-300">Player: <span class="text-white">8 matches</span>, <span class="text-white">22 pts</span>, <span class="text-white">2 last-place finishes</span></p>
+              <p class="font-mono bg-slate-800 rounded px-2 py-1 mt-1 text-slate-200">
+                Avg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 22 ÷ 8 = <span class="text-green-300">2.75</span><br>
+                LossFactor = 1 − (2 ÷ 8) = <span class="text-green-300">0.75</span><br>
+                MatchFactor = 8 ÷ 10 = <span class="text-green-300">0.80</span><br>
+                <span class="text-yellow-300 font-bold">Score = 2.75 × 0.75 × 0.80 = 1.65</span>
+              </p>
+            </div>
+          </div>
+        </span>
       </div>
 
       <div class="w-full overflow-x-auto rounded-2xl border border-slate-200">
@@ -297,7 +382,7 @@
               <th class="p-4 font-bold">Player</th>
               <th class="p-4 font-bold">Matches</th>
               <th class="p-4 font-bold">Wins</th>
-              <th class="p-4 font-bold">Lost</th>
+              <th class="p-4 font-bold">Losts</th>
               <th class="p-4 font-bold">Rating</th>
               <th class="p-4 font-bold">Penalty</th>
               <th class="p-4 font-bold">Points</th>

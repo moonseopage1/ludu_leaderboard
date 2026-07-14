@@ -307,8 +307,8 @@ function calculateStats(sourcePlayers, matches) {
 function calculateLeaderboard(sourcePlayers, matches) {
   return calculateStats(sourcePlayers, matches).sort((a, b) => {
     if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
-    if (b.wins !== a.wins) return b.wins - a.wins;
     if (b.averagePoint !== a.averagePoint) return b.averagePoint - a.averagePoint;
+    if (b.wins !== a.wins) return b.wins - a.wins;
     if (a.lostCount !== b.lostCount) return a.lostCount - b.lostCount;
     return a.player.localeCompare(b.player);
   });
@@ -1470,17 +1470,26 @@ function renderSeasonHistory() {
     .sort((a, b) => b.seasonNumber - a.seasonNumber)
     .map((season) => {
       const rows = (season.leaderboard || [])
+        .slice()
+        .sort((a, b) => {
+          if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+          if (b.averagePoint !== a.averagePoint) return b.averagePoint - a.averagePoint;
+          if (b.wins !== a.wins) return b.wins - a.wins;
+          if (a.lostCount !== b.lostCount) return a.lostCount - b.lostCount;
+          return a.player.localeCompare(b.player);
+        })
         .map(
           (row, index) => `
           <tr class="border-t border-slate-100 hover:bg-emerald-50 transition-colors">
             <td class="p-4 font-extrabold text-lg">${index + 1}</td>
             <td class="break-words p-4 font-semibold text-slate-800">${escapeHtml(row.player)}</td>
             <td class="p-4 text-slate-700">${row.matchesPlayed || row.matches || 0}</td>
+            <td class="p-4 font-bold text-green-600">${row.wins || 0}</td>
+            <td class="p-4 font-semibold text-red-500">${row.lostCount || 0}</td>
             <td class="p-4 font-semibold text-emerald-700">${row.gamePoints ?? row.totalPoints ?? row.points ?? 0}</td>
             <td class="p-4">${formatPenaltyCell(row.penaltyPoints)}</td>
             <td class="p-4 font-extrabold text-xl text-emerald-700">${row.totalPoints || row.points || 0}</td>
             <td class="p-4 font-semibold text-slate-700">${formatNumber(row.averagePoint)}</td>
-            <td class="p-4 text-red-500 font-semibold">${row.lostCount || 0}</td>
           </tr>
         `,
         )
@@ -1501,12 +1510,13 @@ function renderSeasonHistory() {
                 <tr>
                   <th class="p-4 font-bold">Rank</th>
                   <th class="p-4 font-bold">Player</th>
-                  <th class="p-4 font-bold">Total Matches</th>
-                  <th class="p-4 font-bold">Game Points</th>
+                  <th class="p-4 font-bold">Matches</th>
+                  <th class="p-4 font-bold">Wins</th>
+                  <th class="p-4 font-bold">Losts</th>
+                  <th class="p-4 font-bold">Game Pts</th>
                   <th class="p-4 font-bold">Penalty</th>
-                  <th class="p-4 font-bold">Total Points</th>
-                  <th class="p-4 font-bold">Average Point</th>
-                  <th class="p-4 font-bold">Lost Count</th>
+                  <th class="p-4 font-bold">Total</th>
+                  <th class="p-4 font-bold">Avg</th>
                 </tr>
               </thead>
               <tbody>${rows}</tbody>

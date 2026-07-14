@@ -110,6 +110,7 @@ export function calculateStats(players = [], matches = []) {
 export function getLeaderboard(players = [], matches = []) {
   return calculateStats(players, matches).sort((a, b) => {
     if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+    if (b.averagePoint !== a.averagePoint) return b.averagePoint - a.averagePoint;
     if (b.wins !== a.wins) return b.wins - a.wins;
     if (a.lostCount !== b.lostCount) return a.lostCount - b.lostCount;
     return a.player.localeCompare(b.player);
@@ -303,9 +304,7 @@ export function normalizeData(data) {
         seasonNumber: Number(season?.seasonNumber) || index + 1,
         completedAt: season?.completedAt || new Date().toISOString(),
         matchCount: Number(season?.matchCount) || matches.length || SEASON_MATCH_LIMIT,
-        leaderboard: Array.isArray(season?.leaderboard)
-          ? season.leaderboard
-          : getLeaderboard(players, matches),
+        leaderboard: getLeaderboard(players, matches),
         matches,
       };
     }),

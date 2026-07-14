@@ -239,9 +239,16 @@ function penaltySignature(penalties = []) {
 }
 
 function isSameGamePayload(game, payload) {
+  const gameLottery = game?.lotteryOrder || [];
+  const payloadLottery = payload.lotteryOrder || [];
+
+  // Duplicate detection requires a non-empty lottery order on both sides.
+  // Without one, two games can legitimately share the same results, so we
+  // can't reliably tell them apart and must allow the save.
+  if (gameLottery.length === 0 || payloadLottery.length === 0) return false;
+  if (JSON.stringify(gameLottery) !== JSON.stringify(payloadLottery)) return false;
+
   return (
-    JSON.stringify(game?.lotteryOrder || []) ===
-      JSON.stringify(payload.lotteryOrder || []) &&
     JSON.stringify(resultSignature(game?.results)) ===
       JSON.stringify(resultSignature(payload.results)) &&
     JSON.stringify(penaltySignature(game?.penalties)) ===

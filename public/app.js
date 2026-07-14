@@ -1470,6 +1470,14 @@ function renderSeasonHistory() {
     .sort((a, b) => b.seasonNumber - a.seasonNumber)
     .map((season) => {
       const rows = (season.leaderboard || [])
+        .slice()
+        .sort((a, b) => {
+          if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+          if (b.wins !== a.wins) return b.wins - a.wins;
+          if (b.averagePoint !== a.averagePoint) return b.averagePoint - a.averagePoint;
+          if (a.lostCount !== b.lostCount) return a.lostCount - b.lostCount;
+          return a.player.localeCompare(b.player);
+        })
         .map(
           (row, index) => `
           <tr class="border-t border-slate-100 hover:bg-emerald-50 transition-colors">
